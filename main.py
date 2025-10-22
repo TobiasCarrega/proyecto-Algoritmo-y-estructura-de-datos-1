@@ -56,9 +56,7 @@ def pausar():
 # ---------------------------
 def alta_cliente(clientes: dict) -> dict:
     """
-    Alta lógico de cliente. Valida edad >= 18 y datos básicos.
-    Cada cliente es un dict con clave (código string) y valor otro dict con atributos.
-    Un atributo multivalor: 'telefonos' -> lista de strings.
+    Alta lógico de cliente. Telefonos ahora como dict {telefono: True, ...}
     """
     print(">>> ALTA CLIENTE")
     codigo = input("Código cliente (ej: C011): ").strip()
@@ -73,16 +71,16 @@ def alta_cliente(clientes: dict) -> dict:
         return clientes
 
     edad = int(edad_str)
-    # multivalor: telefonos (ingresar separados por coma)
+    # multivalor: telefonos (ingresar separados por coma) -> dict
     telefonos_raw = input("Teléfonos (separe por coma si hay más de uno): ").strip()
-    telefonos = [t.strip() for t in telefonos_raw.split(",") if t.strip() != ""]
+    telefonos = {t.strip(): True for t in telefonos_raw.split(",") if t.strip() != ""}
 
     clientes[codigo] = {
         "Nombre": nombre,
         "Edad": edad,
         "DNI": input("DNI (opcional): ").strip(),
         "Email": input("Email (opcional): ").strip(),
-        "Telefonos": telefonos,            # multivalor
+        "Telefonos": telefonos,            # multivalor como dict
         "Activo": True
     }
     print(f"Cliente {codigo} dado de alta.")
@@ -92,6 +90,7 @@ def alta_cliente(clientes: dict) -> dict:
 def modificar_cliente(clientes: dict) -> dict:
     """
     Modifica datos de un cliente existente (si está activo o inactivo).
+    Telefonos se almacenan como dict {telefono: True}
     """
     print(">>> MODIFICAR CLIENTE")
     codigo = input("Código cliente a modificar: ").strip()
@@ -109,9 +108,9 @@ def modificar_cliente(clientes: dict) -> dict:
     if dni != "":
         cli["DNI"] = dni
 
-    telefonos_raw = input(f"Teléfonos actuales {cli.get('Telefonos')}. Nuevos (coma sep): ").strip()
+    telefonos_raw = input(f"Teléfonos actuales {list(cli.get('Telefonos', {}).keys())}. Nuevos (coma sep): ").strip()
     if telefonos_raw != "":
-        cli["Telefonos"] = [t.strip() for t in telefonos_raw.split(",") if t.strip() != ""]
+        cli["Telefonos"] = {t.strip(): True for t in telefonos_raw.split(",") if t.strip() != ""}
 
     clientes[codigo] = cli
     print(f"Cliente {codigo} modificado.")
@@ -135,6 +134,7 @@ def baja_logica_cliente(clientes: dict) -> dict:
 def listar_clientes_activos(clientes: dict):
     """
     Muestra por pantalla los clientes con 'Activo' == True.
+    Telefonos ahora se obtienen de las claves del dict.
     """
     print(">>> LISTADO DE CLIENTES ACTIVOS")
     encabezado = f"{'CÓDIGO':8} {'NOMBRE':30} {'EDAD':4} {'TELÉFONOS'}"
@@ -142,7 +142,7 @@ def listar_clientes_activos(clientes: dict):
     print("-" * len(encabezado))
     for codigo, datos in clientes.items():
         if datos.get("Activo", False):
-            telefonos = ", ".join(datos.get("Telefonos", []))
+            telefonos = ", ".join(datos.get("Telefonos", {}).keys())
             print(f"{codigo:8} {datos.get('Nombre','')[:30]:30} {str(datos.get('Edad','')):4} {telefonos}")
     # no return (solo visualización)
 
@@ -152,8 +152,7 @@ def listar_clientes_activos(clientes: dict):
 # ---------------------------
 def alta_accesorio(accesorios: dict) -> dict:
     """
-    Alta de accesorio. Atributo multivalor: 'Talles' -> lista de códigos de talles.
-    Mantiene 'Stock', 'PrecioDiario', 'PerdidosRotura' (int).
+    Alta de accesorio. Talles ahora como dict {talle_codigo: True, ...}
     """
     print(">>> ALTA ACCESORIO")
     codigo = input("Código producto (ej: P011): ").strip()
@@ -174,14 +173,14 @@ def alta_accesorio(accesorios: dict) -> dict:
     stock = int(stock_raw)
 
     talles_raw = input("Talles disponibles (separar por coma): ").strip()
-    talles = [t.strip() for t in talles_raw.split(",") if t.strip() != ""]
+    talles = {t.strip(): True for t in talles_raw.split(",") if t.strip() != ""}
 
     accesorios[codigo] = {
         "Nombre": nombre,
         "PrecioDiario": precio,
         "Stock": stock,
         "PerdidosRotura": 0,
-        "Talles": talles,   # multivalor
+        "Talles": talles,   # multivalor como dict
         "Activo": True
     }
     print(f"Accesorio {codigo} cargado.")
@@ -190,7 +189,7 @@ def alta_accesorio(accesorios: dict) -> dict:
 
 def modificar_accesorio(accesorios: dict) -> dict:
     """
-    Modifica un accesorio existente.
+    Modifica un accesorio existente. Talles como dict.
     """
     print(">>> MODIFICAR ACCESORIO")
     codigo = input("Código producto a modificar: ").strip()
@@ -207,9 +206,9 @@ def modificar_accesorio(accesorios: dict) -> dict:
     if precio_raw.isdigit():
         prod["PrecioDiario"] = int(precio_raw)
 
-    talles_raw = input(f"Talles actuales {prod.get('Talles')}. Nuevos (coma sep): ").strip()
+    talles_raw = input(f"Talles actuales {list(prod.get('Talles', {}).keys())}. Nuevos (coma sep): ").strip()
     if talles_raw != "":
-        prod["Talles"] = [t.strip() for t in talles_raw.split(",") if t.strip() != ""]
+        prod["Talles"] = {t.strip(): True for t in talles_raw.split(",") if t.strip() != ""}
 
     accesorios[codigo] = prod
     print(f"Producto {codigo} modificado.")
@@ -245,7 +244,7 @@ def listar_productos_en_stock(accesorios: dict):
 
 def listar_perdidos_rotos(accesorios: dict):
     """
-    Lista ítems perdidos/rotos (campo PerdidossRotura > 0).
+    Lista ítems perdidos/rotos (campo PerdidosRotura > 0).
     """
     print(">>> LISTADO DE ÍTEMS PERDIDOS / ROTOS")
     encabezado = f"{'CÓDIGO':8} {'NOMBRE':30} {'PERDIDOS/ROTOS':15}"
@@ -253,17 +252,17 @@ def listar_perdidos_rotos(accesorios: dict):
     print("-" * len(encabezado))
     for codigo, p in accesorios.items():
         if p.get("PerdidosRotura", 0) > 0:
-            print(f"{codigo:8} {p.get('Nombre','')[:30]}[:30] {str(p.get('PerdidosRotura')):15}")
+            print(f"{codigo:8} {p.get('Nombre','')[:30]:30} {str(p.get('PerdidosRotura')):15}")
 
 
 def listar_talles_producto(accesorios: dict):
     """
-    Muestra talles disponibles por producto.
+    Muestra talles disponibles por producto (ahora claves del dict).
     """
     print(">>> LISTADO DE TALLES POR PRODUCTO")
     for codigo, p in accesorios.items():
         if p.get("Activo", False):
-            print(f"{codigo} - {p.get('Nombre')}: {', '.join(p.get('Talles', []))}")
+            print(f"{codigo} - {p.get('Nombre')}: {', '.join(p.get('Talles', {}).keys())}")
 
 
 # ---------------------------
@@ -271,7 +270,7 @@ def listar_talles_producto(accesorios: dict):
 # ---------------------------
 def alta_talle(talles: dict) -> dict:
     """
-    Alta de talle. Atributo multivalor: 'Equivalencias' (p.ej. S, M, L -> numeric codes).
+    Alta de talle. Equivalencias ahora dict {equiv: True}
     """
     print(">>> ALTA TALLE")
     codigo = input("Código talle (ej: T011): ").strip()
@@ -281,11 +280,11 @@ def alta_talle(talles: dict) -> dict:
 
     nombre = input("Nombre del talle (ej: S, M, L): ").strip()
     equivalencias_raw = input("Equivalencias (separar por coma): ").strip()
-    equivalencias = [e.strip() for e in equivalencias_raw.split(",") if e.strip() != ""]
+    equivalencias = {e.strip(): True for e in equivalencias_raw.split(",") if e.strip() != ""}
 
     talles[codigo] = {
         "Nombre": nombre,
-        "Equivalencias": equivalencias,  # multivalor
+        "Equivalencias": equivalencias,  # multivalor como dict
         "Activo": True
     }
     print(f"Talle {codigo} dado de alta.")
@@ -294,7 +293,7 @@ def alta_talle(talles: dict) -> dict:
 
 def modificar_talle(talles: dict) -> dict:
     """
-    Modifica un talle.
+    Modifica un talle. Equivalencias como dict.
     """
     print(">>> MODIFICAR TALLE")
     codigo = input("Código talle a modificar: ").strip()
@@ -307,9 +306,9 @@ def modificar_talle(talles: dict) -> dict:
     if nombre != "":
         t["Nombre"] = nombre
 
-    equivalencias_raw = input(f"Equivalencias actuales {t.get('Equivalencias')}. Nuevas (coma sep): ").strip()
+    equivalencias_raw = input(f"Equivalencias actuales {list(t.get('Equivalencias', {}).keys())}. Nuevas (coma sep): ").strip()
     if equivalencias_raw != "":
-        t["Equivalencias"] = [e.strip() for e in equivalencias_raw.split(",") if e.strip() != ""]
+        t["Equivalencias"] = {e.strip(): True for e in equivalencias_raw.split(",") if e.strip() != ""}
 
     talles[codigo] = t
     print(f"Talle {codigo} modificado.")
@@ -337,7 +336,7 @@ def listar_talles_activos(talles: dict):
     print(">>> LISTADO DE TALLES ACTIVOS")
     for codigo, t in talles.items():
         if t.get("Activo", False):
-            print(f"{codigo}: {t.get('Nombre')} - Equiv: {', '.join(t.get('Equivalencias', []))}")
+            print(f"{codigo}: {t.get('Nombre')} - Equiv: {', '.join(t.get('Equivalencias', {}).keys())}")
 
 
 # ---------------------------
@@ -465,7 +464,7 @@ def informe_stock_resumen(accesorios: dict):
     print(encabezado)
     print("-" * len(encabezado))
     for codigo, p in accesorios.items():
-        print(f"{codigo:8} {p.get('Nombre','')[:30][:30]} {str(p.get('Stock')):6} {str(p.get('PerdidosRotura')):15}")
+        print(f"{codigo:8} {p.get('Nombre','')[:30]:30} {str(p.get('Stock')):6} {str(p.get('PerdidosRotura')):15}")
 
 
 #----------------------------------------------------------------------------------------------
@@ -476,45 +475,45 @@ def main():
     # Inicialización de variables (3 diccionarios de diccionarios - entidades maestras)
     #-------------------------------------------------
     clientes = {
-        # clave: código string -> valor: dict atributos (incluye 'Telefonos' list)
-        "C001": {"Nombre": "Gonzalo Perez", "Edad": 28, "DNI": "30111222", "Email": "gonzalo@example.com", "Telefonos": ["3411234567"], "Activo": True},
-        "C002": {"Nombre": "María López", "Edad": 34, "DNI": "30122333", "Email": "maria@example.com", "Telefonos": ["3412345678","3419876543"], "Activo": True},
-        "C003": {"Nombre": "Juan García", "Edad": 45, "DNI": "30133444", "Email": "", "Telefonos": ["3415550000"], "Activo": True},
-        "C004": {"Nombre": "Lucía Fernández", "Edad": 22, "DNI": "30144555", "Email": "lucia@example.com", "Telefonos": ["3416661111"], "Activo": True},
-        "C005": {"Nombre": "Carlos Sánchez", "Edad": 50, "DNI": "30155666", "Email": "", "Telefonos": ["3417772222"], "Activo": True},
-        "C006": {"Nombre": "Verónica Ruiz", "Edad": 29, "DNI": "30166777", "Email": "vero@example.com", "Telefonos": ["3418883333","3419994444"], "Activo": True},
-        "C007": {"Nombre": "Diego Martín", "Edad": 31, "DNI": "30177888", "Email": "", "Telefonos": ["3411010101"], "Activo": True},
-        "C008": {"Nombre": "Romina Díaz", "Edad": 27, "DNI": "30188999", "Email": "romi@example.com", "Telefonos": ["3411212121"], "Activo": True},
-        "C009": {"Nombre": "Pedro Alvarez", "Edad": 38, "DNI": "30199000", "Email": "", "Telefonos": ["3411313131"], "Activo": True},
-        "C010": {"Nombre": "Ana Molina", "Edad": 24, "DNI": "30200111", "Email": "ana@example.com", "Telefonos": ["3411414141"], "Activo": True}
+        # clave: código string -> valor: dict atributos (incluye 'Telefonos' dict)
+        "C001": {"Nombre": "Gonzalo Perez", "Edad": 28, "DNI": "30111222", "Email": "gonzalo@example.com", "Telefonos": {"3411234567": True}, "Activo": True},
+        "C002": {"Nombre": "María López", "Edad": 34, "DNI": "30122333", "Email": "maria@example.com", "Telefonos": {"3412345678": True,"3419876543": True}, "Activo": True},
+        "C003": {"Nombre": "Juan García", "Edad": 45, "DNI": "30133444", "Email": "", "Telefonos": {"3415550000": True}, "Activo": True},
+        "C004": {"Nombre": "Lucía Fernández", "Edad": 22, "DNI": "30144555", "Email": "lucia@example.com", "Telefonos": {"3416661111": True}, "Activo": True},
+        "C005": {"Nombre": "Carlos Sánchez", "Edad": 50, "DNI": "30155666", "Email": "", "Telefonos": {"3417772222": True}, "Activo": True},
+        "C006": {"Nombre": "Verónica Ruiz", "Edad": 29, "DNI": "30166777", "Email": "vero@example.com", "Telefonos": {"3418883333": True,"3419994444": True}, "Activo": True},
+        "C007": {"Nombre": "Diego Martín", "Edad": 31, "DNI": "30177888", "Email": "", "Telefonos": {"3411010101": True}, "Activo": True},
+        "C008": {"Nombre": "Romina Díaz", "Edad": 27, "DNI": "30188999", "Email": "romi@example.com", "Telefonos": {"3411212121": True}, "Activo": True},
+        "C009": {"Nombre": "Pedro Alvarez", "Edad": 38, "DNI": "30199000", "Email": "", "Telefonos": {"3411313131": True}, "Activo": True},
+        "C010": {"Nombre": "Ana Molina", "Edad": 24, "DNI": "30200111", "Email": "ana@example.com", "Telefonos": {"3411414141": True}, "Activo": True}
     }
 
     accesorios = {
-        # atributo multivalor: 'Talles' -> lista de códigos de talles
-        "P001": {"Nombre": "Esquí Adulto", "PrecioDiario": 5000, "Stock": 10, "PerdidosRotura": 0, "Talles": ["T01","T02"], "Activo": True},
-        "P002": {"Nombre": "Botas Adulto", "PrecioDiario": 3000, "Stock": 15, "PerdidosRotura": 1, "Talles": ["T02","T03"], "Activo": True},
-        "P003": {"Nombre": "Bastones", "PrecioDiario": 800, "Stock": 20, "PerdidosRotura": 0, "Talles": [], "Activo": True},
-        "P004": {"Nombre": "Casco", "PrecioDiario": 700, "Stock": 25, "PerdidosRotura": 0, "Talles": ["T01","T03"], "Activo": True},
-        "P005": {"Nombre": "Pantalón térmico", "PrecioDiario": 900, "Stock": 12, "PerdidosRotura": 0, "Talles": ["T02","T03","T04"], "Activo": True},
-        "P006": {"Nombre": "Campera térmica", "PrecioDiario": 1500, "Stock": 8, "PerdidosRotura": 0, "Talles": ["T03"], "Activo": True},
-        "P007": {"Nombre": "Guantes", "PrecioDiario": 300, "Stock": 30, "PerdidosRotura": 2, "Talles": ["T01","T02"], "Activo": True},
-        "P008": {"Nombre": "Gafas", "PrecioDiario": 250, "Stock": 40, "PerdidosRotura": 0, "Talles": [], "Activo": True},
-        "P009": {"Nombre": "Protector espalda", "PrecioDiario": 1200, "Stock": 5, "PerdidosRotura": 0, "Talles": ["T02"], "Activo": True},
-        "P010": {"Nombre": "Mochila porta esquí", "PrecioDiario": 1100, "Stock": 7, "PerdidosRotura": 0, "Talles": [], "Activo": True}
+        # atributo multivalor: 'Talles' -> dict de códigos de talles
+        "P001": {"Nombre": "Esquí Adulto", "PrecioDiario": 5000, "Stock": 10, "PerdidosRotura": 0, "Talles": {"T01": True,"T02": True}, "Activo": True},
+        "P002": {"Nombre": "Botas Adulto", "PrecioDiario": 3000, "Stock": 15, "PerdidosRotura": 1, "Talles": {"T02": True,"T03": True}, "Activo": True},
+        "P003": {"Nombre": "Bastones", "PrecioDiario": 800, "Stock": 20, "PerdidosRotura": 0, "Talles": {}, "Activo": True},
+        "P004": {"Nombre": "Casco", "PrecioDiario": 700, "Stock": 25, "PerdidosRotura": 0, "Talles": {"T01": True,"T03": True}, "Activo": True},
+        "P005": {"Nombre": "Pantalón térmico", "PrecioDiario": 900, "Stock": 12, "PerdidosRotura": 0, "Talles": {"T02": True,"T03": True,"T04": True}, "Activo": True},
+        "P006": {"Nombre": "Campera térmica", "PrecioDiario": 1500, "Stock": 8, "PerdidosRotura": 0, "Talles": {"T03": True}, "Activo": True},
+        "P007": {"Nombre": "Guantes", "PrecioDiario": 300, "Stock": 30, "PerdidosRotura": 2, "Talles": {"T01": True,"T02": True}, "Activo": True},
+        "P008": {"Nombre": "Gafas", "PrecioDiario": 250, "Stock": 40, "PerdidosRotura": 0, "Talles": {}, "Activo": True},
+        "P009": {"Nombre": "Protector espalda", "PrecioDiario": 1200, "Stock": 5, "PerdidosRotura": 0, "Talles": {"T02": True}, "Activo": True},
+        "P010": {"Nombre": "Mochila porta esquí", "PrecioDiario": 1100, "Stock": 7, "PerdidosRotura": 0, "Talles": {}, "Activo": True}
     }
 
     talles = {
-        # atributo multivalor: 'Equivalencias' -> lista
-        "T01": {"Nombre": "S", "Equivalencias": ["36","38"], "Activo": True},
-        "T02": {"Nombre": "M", "Equivalencias": ["40","42"], "Activo": True},
-        "T03": {"Nombre": "L", "Equivalencias": ["44","46"], "Activo": True},
-        "T04": {"Nombre": "XL", "Equivalencias": ["48","50"], "Activo": True},
-        "T05": {"Nombre": "Niño XS", "Equivalencias": ["28","30"], "Activo": True},
-        "T06": {"Nombre": "Niño S", "Equivalencias": ["32","34"], "Activo": True},
-        "T07": {"Nombre": "Unisex único", "Equivalencias": [], "Activo": True},
-        "T08": {"Nombre": "Extra L", "Equivalencias": ["52"], "Activo": True},
-        "T09": {"Nombre": "Junior", "Equivalencias": ["30","32"], "Activo": True},
-        "T10": {"Nombre": "Bebe", "Equivalencias": ["24"], "Activo": True}
+        # atributo multivalor: 'Equivalencias' -> dict
+        "T01": {"Nombre": "S", "Equivalencias": {"36": True,"38": True}, "Activo": True},
+        "T02": {"Nombre": "M", "Equivalencias": {"40": True,"42": True}, "Activo": True},
+        "T03": {"Nombre": "L", "Equivalencias": {"44": True,"46": True}, "Activo": True},
+        "T04": {"Nombre": "XL", "Equivalencias": {"48": True,"50": True}, "Activo": True},
+        "T05": {"Nombre": "Niño XS", "Equivalencias": {"28": True,"30": True}, "Activo": True},
+        "T06": {"Nombre": "Niño S", "Equivalencias": {"32": True,"34": True}, "Activo": True},
+        "T07": {"Nombre": "Unisex único", "Equivalencias": {}, "Activo": True},
+        "T08": {"Nombre": "Extra L", "Equivalencias": {"52": True}, "Activo": True},
+        "T09": {"Nombre": "Junior", "Equivalencias": {"30": True,"32": True}, "Activo": True},
+        "T10": {"Nombre": "Bebe", "Equivalencias": {"24": True}, "Activo": True}
     }
 
     alquileres = {
@@ -553,7 +552,7 @@ def main():
             continue
 
         elif opcionMenuPrincipal == "1":
-            # Submenú Clientes (controlado por flag)
+            # Submenú Clientes 
             clientes_running = True
             while clientes_running:
                 opciones_sub = 4
@@ -593,7 +592,7 @@ def main():
                 print("\n\n")
 
         elif opcionMenuPrincipal == "2":
-            # Submenú Accesorios (controlado por flag)
+            # Submenú Accesorios 
             accesorios_running = True
             while accesorios_running:
                 opciones_sub = 6
@@ -639,7 +638,7 @@ def main():
                 print("\n\n")
 
         elif opcionMenuPrincipal == "3":
-            # Submenú Talles (controlado por flag)
+            # Submenú Talles 
             talles_running = True
             while talles_running:
                 opciones_sub = 4
