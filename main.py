@@ -239,7 +239,7 @@ def listar_productos_en_stock(accesorios: dict):
     print("-" * len(encabezado))
     for codigo, p in accesorios.items():
         if p.get("Activo", False) and p.get("Stock", 0) > 0:
-            print(f"{codigo:8} {p.get('Nombre','')[:30}:30} {str(p.get('Stock')):6} {str(p.get('PrecioDiario')):12}")
+            print(f"{codigo:8} {p.get('Nombre','')[:30]:30} {str(p.get('Stock')):6} {str(p.get('PrecioDiario')):12}")
 
 
 def listar_perdidos_rotos(accesorios: dict):
@@ -252,7 +252,7 @@ def listar_perdidos_rotos(accesorios: dict):
     print("-" * len(encabezado))
     for codigo, p in accesorios.items():
         if p.get("PerdidosRotura", 0) > 0:
-            print(f"{codigo:8} {p.get('Nombre','')[:30}:30} {str(p.get('PerdidosRotura')):15}")
+            print(f"{codigo:8} {p.get('Nombre','')[:30]:30} {str(p.get('PerdidosRotura')):15}")
 
 
 def listar_talles_producto(accesorios: dict):
@@ -464,7 +464,7 @@ def informe_stock_resumen(accesorios: dict):
     print(encabezado)
     print("-" * len(encabezado))
     for codigo, p in accesorios.items():
-        print(f"{codigo:8} {p.get('Nombre','')[:30}:30} {str(p.get('Stock')):6} {str(p.get('PerdidosRotura')):15}")
+        print(f"{codigo:8} {p.get('Nombre','')[:30]:30} {str(p.get('Stock')):6} {str(p.get('PerdidosRotura')):15}")
 
 
 #----------------------------------------------------------------------------------------------
