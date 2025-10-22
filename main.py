@@ -25,7 +25,7 @@ import time  # permitido en el enunciado para obtener fecha/hora
 # ---------------------------
 # Utilidades
 # ---------------------------
-def fecha_hora_actual() -> str:
+def fecha_hora_actual():
     """
     Devuelve la fecha/hora actual como string con formato "AAAA.MM.DD hh:mm:ss".
     """
@@ -239,7 +239,7 @@ def listar_productos_en_stock(accesorios: dict):
     print("-" * len(encabezado))
     for codigo, p in accesorios.items():
         if p.get("Activo", False) and p.get("Stock", 0) > 0:
-            print(f"{codigo:8} {p.get('Nombre','')[:30]:30} {str(p.get('Stock')):6} {str(p.get('PrecioDiario')):12}")
+            print(f"{codigo:8} {p.get('Nombre','')[:30}:30} {str(p.get('Stock')):6} {str(p.get('PrecioDiario')):12}")
 
 
 def listar_perdidos_rotos(accesorios: dict):
@@ -252,7 +252,7 @@ def listar_perdidos_rotos(accesorios: dict):
     print("-" * len(encabezado))
     for codigo, p in accesorios.items():
         if p.get("PerdidosRotura", 0) > 0:
-            print(f"{codigo:8} {p.get('Nombre','')[:30]:30} {str(p.get('PerdidosRotura')):15}")
+            print(f"{codigo:8} {p.get('Nombre','')[:30}:30} {str(p.get('PerdidosRotura')):15}")
 
 
 def listar_talles_producto(accesorios: dict):
@@ -464,7 +464,7 @@ def informe_stock_resumen(accesorios: dict):
     print(encabezado)
     print("-" * len(encabezado))
     for codigo, p in accesorios.items():
-        print(f"{codigo:8} {p.get('Nombre','')[:30]:30} {str(p.get('Stock')):6} {str(p.get('PerdidosRotura')):15}")
+        print(f"{codigo:8} {p.get('Nombre','')[:30}:30} {str(p.get('Stock')):6} {str(p.get('PerdidosRotura')):15}")
 
 
 #----------------------------------------------------------------------------------------------
@@ -549,7 +549,6 @@ def main():
         if opcionMenuPrincipal == "0":
             print("Saliendo...")
             running = False
-            continue
 
         elif opcionMenuPrincipal == "1":
             # Submenú Clientes 
@@ -578,18 +577,18 @@ def main():
 
                 if opcionSub == "0":
                     clientes_running = False
-                    continue
-                elif opcionSub == "1":
-                    clientes = alta_cliente(clientes)
-                elif opcionSub == "2":
-                    clientes = modificar_cliente(clientes)
-                elif opcionSub == "3":
-                    clientes = baja_logica_cliente(clientes)
-                elif opcionSub == "4":
-                    listar_clientes_activos(clientes)
+                else:
+                    if opcionSub == "1":
+                        clientes = alta_cliente(clientes)
+                    elif opcionSub == "2":
+                        clientes = modificar_cliente(clientes)
+                    elif opcionSub == "3":
+                        clientes = baja_logica_cliente(clientes)
+                    elif opcionSub == "4":
+                        listar_clientes_activos(clientes)
 
-                pausar()
-                print("\n\n")
+                    pausar()
+                    print("\n\n")
 
         elif opcionMenuPrincipal == "2":
             # Submenú Accesorios 
@@ -620,22 +619,22 @@ def main():
 
                 if opcionSub == "0":
                     accesorios_running = False
-                    continue
-                elif opcionSub == "1":
-                    accesorios = alta_accesorio(accesorios)
-                elif opcionSub == "2":
-                    accesorios = modificar_accesorio(accesorios)
-                elif opcionSub == "3":
-                    accesorios = baja_logica_accesorio(accesorios)
-                elif opcionSub == "4":
-                    listar_productos_en_stock(accesorios)
-                elif opcionSub == "5":
-                    listar_perdidos_rotos(accesorios)
-                elif opcionSub == "6":
-                    listar_talles_producto(accesorios)
+                else:
+                    if opcionSub == "1":
+                        accesorios = alta_accesorio(accesorios)
+                    elif opcionSub == "2":
+                        accesorios = modificar_accesorio(accesorios)
+                    elif opcionSub == "3":
+                        accesorios = baja_logica_accesorio(accesorios)
+                    elif opcionSub == "4":
+                        listar_productos_en_stock(accesorios)
+                    elif opcionSub == "5":
+                        listar_perdidos_rotos(accesorios)
+                    elif opcionSub == "6":
+                        listar_talles_producto(accesorios)
 
-                pausar()
-                print("\n\n")
+                    pausar()
+                    print("\n\n")
 
         elif opcionMenuPrincipal == "3":
             # Submenú Talles 
@@ -664,18 +663,18 @@ def main():
 
                 if opcionSub == "0":
                     talles_running = False
-                    continue
-                elif opcionSub == "1":
-                    talles = alta_talle(talles)
-                elif opcionSub == "2":
-                    talles = modificar_talle(talles)
-                elif opcionSub == "3":
-                    talles = baja_logica_talle(talles)
-                elif opcionSub == "4":
-                    listar_talles_activos(talles)
+                else:
+                    if opcionSub == "1":
+                        talles = alta_talle(talles)
+                    elif opcionSub == "2":
+                        talles = modificar_talle(talles)
+                    elif opcionSub == "3":
+                        talles = baja_logica_talle(talles)
+                    elif opcionSub == "4":
+                        listar_talles_activos(talles)
 
-                pausar()
-                print("\n\n")
+                    pausar()
+                    print("\n\n")
 
         elif opcionMenuPrincipal == "4":
             # Submenú Alquileres / Informes (controlado por flag)
@@ -704,20 +703,20 @@ def main():
 
                 if opcionSub == "0":
                     alquileres_running = False
-                    continue
-                elif opcionSub == "1":
-                    alquileres = registrar_alquiler(alquileres, clientes, accesorios)
-                elif opcionSub == "2":
-                    listar_alquileres_mes_actual(alquileres, clientes, accesorios)
-                elif opcionSub == "3":
-                    informe_resumen_anual_cantidades(alquileres, accesorios)
-                    informe_resumen_anual_pesos(alquileres, accesorios)
-                elif opcionSub == "4":
-                    informe_libre_eleccion(alquileres, clientes, accesorios)
-                    informe_stock_resumen(accesorios)
+                else:
+                    if opcionSub == "1":
+                        alquileres = registrar_alquiler(alquileres, clientes, accesorios)
+                    elif opcionSub == "2":
+                        listar_alquileres_mes_actual(alquileres, clientes, accesorios)
+                    elif opcionSub == "3":
+                        informe_resumen_anual_cantidades(alquileres, accesorios)
+                        informe_resumen_anual_pesos(alquileres, accesorios)
+                    elif opcionSub == "4":
+                        informe_libre_eleccion(alquileres, clientes, accesorios)
+                        informe_stock_resumen(accesorios)
 
-                pausar()
-                print("\n\n")
+                    pausar()
+                    print("\n\n")
 
 
 if __name__ == "__main__":
