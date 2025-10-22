@@ -253,7 +253,7 @@ def listar_perdidos_rotos(accesorios: dict):
     print("-" * len(encabezado))
     for codigo, p in accesorios.items():
         if p.get("PerdidosRotura", 0) > 0:
-            print(f"{codigo:8} {p.get('Nombre','')[:30]:30} {str(p.get('PerdidosRotura')):15}")
+            print(f"{codigo:8} {p.get('Nombre','')[:30]}[:30] {str(p.get('PerdidosRotura')):15}")
 
 
 def listar_talles_producto(accesorios: dict):
@@ -465,7 +465,7 @@ def informe_stock_resumen(accesorios: dict):
     print(encabezado)
     print("-" * len(encabezado))
     for codigo, p in accesorios.items():
-        print(f"{codigo:8} {p.get('Nombre','')[:30]:30} {str(p.get('Stock')):6} {str(p.get('PerdidosRotura')):15}")
+        print(f"{codigo:8} {p.get('Nombre','')[:30][:30]} {str(p.get('Stock')):6} {str(p.get('PerdidosRotura')):15}")
 
 
 #----------------------------------------------------------------------------------------------
@@ -517,17 +517,19 @@ def main():
         "T10": {"Nombre": "Bebe", "Equivalencias": ["24"], "Activo": True}
     }
 
-    # Entidad transacciones: alquileres -> 2 diccionarios anidados (año -> id -> datos)
     alquileres = {
         # Ejemplo inicial vacío; se cargan por año. Estructura: alquileres['2025'] = {'ALQ0001': {...}, ...}
     }
 
     #-------------------------------------------------
-    # Bloque de menú (según plantilla)
+    # Bloque de menú 
     #-------------------------------------------------
-    while True:
-        while True:
-            opciones = 5
+    running = True
+    while running:
+        opciones = 5
+        opcionMenuPrincipal = None
+        valido = False
+        while not valido:
             print()
             print("---------------------------")
             print("MENÚ PRINCIPAL")
@@ -539,21 +541,25 @@ def main():
             print("[0] Salir del programa")
             print("---------------------------")
             opcionMenuPrincipal = input("Seleccione una opción: ")
-            if opcionMenuPrincipal in [str(i) for i in range(0, opciones)]:  # 0..4 válidos
-                break
+            if opcionMenuPrincipal in [str(i) for i in range(0, opciones)]:
+                valido = True
             else:
                 input("Opción inválida. Presione ENTER para volver a seleccionar.")
         print()
 
         if opcionMenuPrincipal == "0":
             print("Saliendo...")
-            exit()
+            running = False
+            continue
 
         elif opcionMenuPrincipal == "1":
-            # Submenú Clientes
-            while True:
-                while True:
-                    opciones_sub = 4
+            # Submenú Clientes (controlado por flag)
+            clientes_running = True
+            while clientes_running:
+                opciones_sub = 4
+                opcionSub = None
+                valido_sub = False
+                while not valido_sub:
                     print()
                     print("---------------------------")
                     print("MENÚ > GESTIÓN DE CLIENTES")
@@ -566,13 +572,14 @@ def main():
                     print("---------------------------")
                     opcionSub = input("Seleccione una opción: ")
                     if opcionSub in [str(i) for i in range(0, opciones_sub + 1)]:
-                        break
+                        valido_sub = True
                     else:
                         input("Opción inválida. Presione ENTER para volver a seleccionar.")
                 print()
 
                 if opcionSub == "0":
-                    break
+                    clientes_running = False
+                    continue
                 elif opcionSub == "1":
                     clientes = alta_cliente(clientes)
                 elif opcionSub == "2":
@@ -586,10 +593,13 @@ def main():
                 print("\n\n")
 
         elif opcionMenuPrincipal == "2":
-            # Submenú Accesorios
-            while True:
-                while True:
-                    opciones_sub = 6
+            # Submenú Accesorios (controlado por flag)
+            accesorios_running = True
+            while accesorios_running:
+                opciones_sub = 6
+                opcionSub = None
+                valido_sub = False
+                while not valido_sub:
                     print()
                     print("---------------------------")
                     print("MENÚ > GESTIÓN DE ACCESORIOS")
@@ -604,13 +614,14 @@ def main():
                     print("---------------------------")
                     opcionSub = input("Seleccione una opción: ")
                     if opcionSub in [str(i) for i in range(0, opciones_sub + 1)]:
-                        break
+                        valido_sub = True
                     else:
                         input("Opción inválida. Presione ENTER para volver a seleccionar.")
                 print()
 
                 if opcionSub == "0":
-                    break
+                    accesorios_running = False
+                    continue
                 elif opcionSub == "1":
                     accesorios = alta_accesorio(accesorios)
                 elif opcionSub == "2":
@@ -628,10 +639,13 @@ def main():
                 print("\n\n")
 
         elif opcionMenuPrincipal == "3":
-            # Submenú Talles
-            while True:
-                while True:
-                    opciones_sub = 4
+            # Submenú Talles (controlado por flag)
+            talles_running = True
+            while talles_running:
+                opciones_sub = 4
+                opcionSub = None
+                valido_sub = False
+                while not valido_sub:
                     print()
                     print("---------------------------")
                     print("MENÚ > GESTIÓN DE TALLES")
@@ -644,13 +658,14 @@ def main():
                     print("---------------------------")
                     opcionSub = input("Seleccione una opción: ")
                     if opcionSub in [str(i) for i in range(0, opciones_sub + 1)]:
-                        break
+                        valido_sub = True
                     else:
                         input("Opción inválida. Presione ENTER para volver a seleccionar.")
                 print()
 
                 if opcionSub == "0":
-                    break
+                    talles_running = False
+                    continue
                 elif opcionSub == "1":
                     talles = alta_talle(talles)
                 elif opcionSub == "2":
@@ -664,10 +679,13 @@ def main():
                 print("\n\n")
 
         elif opcionMenuPrincipal == "4":
-            # Submenú Alquileres / Informes
-            while True:
-                while True:
-                    opciones_sub = 4
+            # Submenú Alquileres / Informes (controlado por flag)
+            alquileres_running = True
+            while alquileres_running:
+                opciones_sub = 4
+                opcionSub = None
+                valido_sub = False
+                while not valido_sub:
                     print()
                     print("---------------------------")
                     print("MENÚ > ALQUILERES / INFORMES")
@@ -680,19 +698,19 @@ def main():
                     print("---------------------------")
                     opcionSub = input("Seleccione una opción: ")
                     if opcionSub in [str(i) for i in range(0, opciones_sub + 1)]:
-                        break
+                        valido_sub = True
                     else:
                         input("Opción inválida. Presione ENTER para volver a seleccionar.")
                 print()
 
                 if opcionSub == "0":
-                    break
+                    alquileres_running = False
+                    continue
                 elif opcionSub == "1":
                     alquileres = registrar_alquiler(alquileres, clientes, accesorios)
                 elif opcionSub == "2":
                     listar_alquileres_mes_actual(alquileres, clientes, accesorios)
                 elif opcionSub == "3":
-                    # llamadas a funciones plantilla para completar
                     informe_resumen_anual_cantidades(alquileres, accesorios)
                     informe_resumen_anual_pesos(alquileres, accesorios)
                 elif opcionSub == "4":
