@@ -424,13 +424,25 @@ def listar_alquileres_mes_actual(alquileres: dict, clientes: dict, accesorios: d
 
 
 # TODO: implementar funciones para informe matricial anual (cantidades y pesos)
-def informe_resumen_anual_cantidades(alquileres: dict, accesorios: dict):
-    """
-    Informe 2: Resumen de cantidad de operaciones por año y por mes (matricial).
-    (Función plantilla; completar la agregación).
-    """
-    print(">>> INFORME: RESUMEN ANUAL - CANTIDADES")
-    print("Función plantilla: completar agregación según requisitos.")
+def informe_resumen_anual_cantidades(alquileres: dict, clientes: dict, accesorios: dict):
+    print(">>> LISTADO DE ALQUILERES - ANUAL")
+    encabezado = f"{'Año':6}{'ID_Alquiler':15}{'Fecha/Hora':20}{'Cliente':20}{'Producto':25}{'Cant.':6}{'Unit.':10}{'Total':12}"
+    print(encabezado)
+    print("-" * len(encabezado))
+
+    # recorre todos los años
+    for año, datos_anuales in alquileres.items():
+        # recorre los alquileres de ese año
+        for id_alq, datos in datos_anuales.items():
+            fecha = datos.get("FechaHora", "")
+            cliente_nombre = clientes.get(datos.get("Cliente"), {}).get("Nombre", datos.get("Cliente"))
+            producto_nombre = accesorios.get(datos.get("Producto"), {}).get("Nombre", datos.get("Producto"))
+            cantidad = datos.get("Cantidad", 0)
+            unitario = datos.get("PrecioUnit", 0)
+            total = datos.get("Total", 0)
+
+            print(f"{año:6} {id_alq:12} {fecha:20} {cliente_nombre[:20]:20} {producto_nombre[:25]:25} {cantidad:6} {unitario:10} {total:12}")
+
 
 
 def informe_resumen_anual_pesos(alquileres: dict, accesorios: dict):
@@ -791,7 +803,7 @@ def main():
                     elif opcionSub == "2":
                         listar_alquileres_mes_actual(alquileres, clientes, accesorios)
                     elif opcionSub == "3":
-                        informe_resumen_anual_cantidades(alquileres, accesorios)
+                        informe_resumen_anual_cantidades(alquileres, clientes, accesorios)
                         informe_resumen_anual_pesos(alquileres, accesorios)
                     elif opcionSub == "4":
                         informe_libre_eleccion(alquileres, clientes, accesorios)
