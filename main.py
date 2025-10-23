@@ -93,7 +93,7 @@ def modificar_cliente(clientes: dict) -> dict:
     Telefonos se almacenan como dict {telefono: True}
     """
     print(">>> MODIFICAR CLIENTE")
-    codigo = input("Código cliente a modificar: ").strip()
+    codigo = input("Código cliente a modificar: ").strip().upper()
     if codigo not in clientes:
         print("Cliente no encontrado.")
         return clientes
@@ -464,7 +464,7 @@ def informe_stock_resumen(accesorios: dict):
     print(encabezado)
     print("-" * len(encabezado))
     for codigo, p in accesorios.items():
-        print(f"{codigo:8} {p.get('Nombre','')[:30]:30} {str(p.get('Stock')):6} {str(p.get('PerdidosRotura')):15}")
+        print(f"{codigo:8} {p.get('Nombre',''):30} {str(p.get('Stock')):6} {str(p.get('PerdidosRotura')):15}")
 
 
 #----------------------------------------------------------------------------------------------
@@ -517,7 +517,89 @@ def main():
     }
 
     alquileres = {
-        # Ejemplo inicial vacío; se cargan por año. Estructura: alquileres['2025'] = {'ALQ0001': {...}, ...}
+        # Ejemplo inicial con 10 operaciones (año 2025) siguiendo la estructura usada en registrar_alquiler()
+        "2025": {
+            "ALQ0001": {
+                "FechaHora": "2025.10.01 09:12:00",
+                "Cliente": "C001",
+                "Producto": "P001",
+                "Cantidad": 1,
+                "PrecioUnit": 5000,
+                "Total": 5000
+            },
+            "ALQ0002": {
+                "FechaHora": "2025.10.02 10:30:00",
+                "Cliente": "C002",
+                "Producto": "P002",
+                "Cantidad": 2,
+                "PrecioUnit": 3000,
+                "Total": 6000
+            },
+            "ALQ0003": {
+                "FechaHora": "2025.10.03 11:00:00",
+                "Cliente": "C003",
+                "Producto": "P003",
+                "Cantidad": 3,
+                "PrecioUnit": 800,
+                "Total": 2400
+            },
+            "ALQ0004": {
+                "FechaHora": "2025.10.04 12:15:00",
+                "Cliente": "C004",
+                "Producto": "P004",
+                "Cantidad": 1,
+                "PrecioUnit": 700,
+                "Total": 700
+            },
+            "ALQ0005": {
+                "FechaHora": "2025.10.05 13:45:00",
+                "Cliente": "C005",
+                "Producto": "P005",
+                "Cantidad": 2,
+                "PrecioUnit": 900,
+                "Total": 1800
+            },
+            "ALQ0006": {
+                "FechaHora": "2025.10.06 14:20:00",
+                "Cliente": "C006",
+                "Producto": "P006",
+                "Cantidad": 1,
+                "PrecioUnit": 1500,
+                "Total": 1500
+            },
+            "ALQ0007": {
+                "FechaHora": "2025.10.07 15:05:00",
+                "Cliente": "C007",
+                "Producto": "P007",
+                "Cantidad": 4,
+                "PrecioUnit": 300,
+                "Total": 1200
+            },
+            "ALQ0008": {
+                "FechaHora": "2025.10.08 16:40:00",
+                "Cliente": "C008",
+                "Producto": "P008",
+                "Cantidad": 2,
+                "PrecioUnit": 250,
+                "Total": 500
+            },
+            "ALQ0009": {
+                "FechaHora": "2025.10.09 17:10:00",
+                "Cliente": "C009",
+                "Producto": "P009",
+                "Cantidad": 1,
+                "PrecioUnit": 1200,
+                "Total": 1200
+            },
+            "ALQ0010": {
+                "FechaHora": "2025.10.10 18:00:00",
+                "Cliente": "C010",
+                "Producto": "P010",
+                "Cantidad": 3,
+                "PrecioUnit": 1100,
+                "Total": 3300
+            }
+        }
     }
 
     #-------------------------------------------------
