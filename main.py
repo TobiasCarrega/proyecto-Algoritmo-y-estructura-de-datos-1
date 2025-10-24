@@ -32,7 +32,7 @@ def fecha_hora_actual():
     return time.strftime("%Y.%m.%d %H:%M:%S")
 
 
-def validar_entero_en_rango(texto_input: str, min_val: int, max_val: int) -> int:
+def validar_entero_en_rango(texto_input: str, min_val: int, max_val: int):
     """
     Pide por teclado un entero entre min_val y max_val (inclusive).
     Valida que la entrada sea numérica y esté en rango. Devuelve el entero aceptado.
@@ -54,24 +54,24 @@ def pausar():
 # ---------------------------
 # CRUD CLIENTES
 # ---------------------------
-def alta_cliente(clientes: dict) -> dict:
+def alta_cliente(clientes: dict):
     """
     Alta lógico de cliente. Telefonos ahora como dict {telefono: True, ...}
     """
     print(">>> ALTA CLIENTE")
-    codigo = input("Código cliente (ej: C011): ").strip()
+    codigo = input("Código cliente (ej: C011): ").strip().upper()
     if codigo == "" or codigo in clientes:
         print("Código inválido o ya existe.")
         return clientes
 
-    nombre = input("Nombre y Apellido: ").strip()
+    nombre = input("Nombre y Apellido: ").strip().upper()
     edad_str = input("Edad: ").strip()
     if not edad_str.isdigit() or int(edad_str) < 18:
         print("No se permiten clientes menores a 18 años.")
         return clientes
 
     edad = int(edad_str)
-    # multivalor: telefonos (ingresar separados por coma) -> dict
+    # multivalor: telefonos (ingresar separados por coma) 
     telefonos_raw = input("Teléfonos (separe por coma si hay más de uno): ").strip()
     telefonos = {t.strip(): True for t in telefonos_raw.split(",") if t.strip() != ""}
 
@@ -87,12 +87,13 @@ def alta_cliente(clientes: dict) -> dict:
     return clientes
 
 
-def modificar_cliente(clientes: dict) -> dict:
+def modificar_cliente(clientes: dict):
     """
     Modifica datos de un cliente existente (si está activo o inactivo).
     Telefonos se almacenan como dict {telefono: True}
     """
     print(">>> MODIFICAR CLIENTE")
+    listar_clientes_activos(clientes)
     codigo = input("Código cliente a modificar: ").strip().upper()
     if codigo not in clientes:
         print("Cliente no encontrado.")
@@ -117,12 +118,13 @@ def modificar_cliente(clientes: dict) -> dict:
     return clientes
 
 
-def baja_logica_cliente(clientes: dict) -> dict:
+def baja_logica_cliente(clientes: dict):
     """
     Marca el cliente como inactivo (baja lógica).
     """
     print(">>> ELIMINAR (Baja lógica) CLIENTE")
-    codigo = input("Código cliente a dar de baja: ").strip()
+    print(">>> ej:codigo de cliente: C011")
+    codigo = input("Código cliente a dar de baja: ").strip().upper()
     if codigo not in clientes:
         print("Cliente no encontrado.")
         return clientes
@@ -144,17 +146,22 @@ def listar_clientes_activos(clientes: dict):
         if datos.get("Activo", False):
             telefonos = ", ".join(datos.get("Telefonos", {}).keys())
             print(f"{codigo:8} {datos.get('Nombre','')[:30]:30} {str(datos.get('Edad','')):4} {telefonos}")
+    print("-" * len(encabezado))
+
     # no return (solo visualización)
 
 
 # ---------------------------
 # CRUD ACCESORIOS / PRODUCTOS
 # ---------------------------
-def alta_accesorio(accesorios: dict) -> dict:
+def alta_accesorio(accesorios: dict) :
     """
     Alta de accesorio. Talles ahora como dict {talle_codigo: True, ...}
     """
     print(">>> ALTA ACCESORIO")
+    listar_productos_en_stock(accesorios)
+
+
     codigo = input("Código producto (ej: P011): ").strip()
     if codigo == "" or codigo in accesorios:
         print("Código inválido o ya existe.")
@@ -187,11 +194,13 @@ def alta_accesorio(accesorios: dict) -> dict:
     return accesorios
 
 
-def modificar_accesorio(accesorios: dict) -> dict:
+def modificar_accesorio(accesorios: dict) :
     """
     Modifica un accesorio existente. Talles como dict.
     """
     print(">>> MODIFICAR ACCESORIO")
+    listar_productos_en_stock(accesorios)
+
     codigo = input("Código producto a modificar: ").strip()
     if codigo not in accesorios:
         print("Producto no encontrado.")
@@ -215,7 +224,7 @@ def modificar_accesorio(accesorios: dict) -> dict:
     return accesorios
 
 
-def baja_logica_accesorio(accesorios: dict) -> dict:
+def baja_logica_accesorio(accesorios: dict) :
     """
     Marca un accesorio como inactivo (baja lógica).
     """
@@ -240,6 +249,8 @@ def listar_productos_en_stock(accesorios: dict):
     for codigo, p in accesorios.items():
         if p.get("Activo", False) and p.get("Stock", 0) > 0:
             print(f"{codigo:8} {p.get('Nombre','')[:30]:30} {str(p.get('Stock')):6} {str(p.get('PrecioDiario')):12}")
+    print("-" * len(encabezado))
+
 
 
 def listar_perdidos_rotos(accesorios: dict):
@@ -268,7 +279,7 @@ def listar_talles_producto(accesorios: dict):
 # ---------------------------
 # CRUD TALLES (Entidad maestra 3)
 # ---------------------------
-def alta_talle(talles: dict) -> dict:
+def alta_talle(talles: dict) :
     """
     Alta de talle. Equivalencias ahora dict {equiv: True}
     """
@@ -291,11 +302,13 @@ def alta_talle(talles: dict) -> dict:
     return talles
 
 
-def modificar_talle(talles: dict) -> dict:
+def modificar_talle(talles: dict, accesorios: dict) : 
     """
     Modifica un talle. Equivalencias como dict.
     """
     print(">>> MODIFICAR TALLE")
+    listar_productos_en_stock(accesorios)
+
     codigo = input("Código talle a modificar: ").strip()
     if codigo not in talles:
         print("Talle no encontrado.")
@@ -315,7 +328,7 @@ def modificar_talle(talles: dict) -> dict:
     return talles
 
 
-def baja_logica_talle(talles: dict) -> dict:
+def baja_logica_talle(talles: dict) :
     """
     Baja lógica de un talle.
     """
@@ -342,7 +355,7 @@ def listar_talles_activos(talles: dict):
 # ---------------------------
 # ENTIDAD TRANSACCIONES: ALQUILERES (2 diccionarios anidados)
 # ---------------------------
-def registrar_alquiler(alquileres: dict, clientes: dict, accesorios: dict) -> dict:
+def registrar_alquiler(alquileres: dict, clientes: dict, accesorios: dict) :
     print(">>> REGISTRAR ALQUILER")
     anio = time.strftime("%Y")
     # generar ID simple (se cuenta cantidad actual + 1)
@@ -350,12 +363,12 @@ def registrar_alquiler(alquileres: dict, clientes: dict, accesorios: dict) -> di
         alquileres[anio] = {}
 
     next_id = f"ALQ{len(alquileres[anio]) + 1:04d}"
-    codigo_cliente = input("Código cliente: ").strip()
+    codigo_cliente = input("Código cliente: ").strip().upper()
     if codigo_cliente not in clientes or not clientes[codigo_cliente].get("Activo", False):
         print("Cliente inválido o inactivo.")
         return alquileres
 
-    codigo_producto = input("Código producto: ").strip()
+    codigo_producto = input("Código producto: ").strip().upper()
     if codigo_producto not in accesorios or not accesorios[codigo_producto].get("Activo", False):
         print("Producto inválido o inactivo.")
         return alquileres
@@ -450,17 +463,6 @@ def informe_resumen_anual(alquileres: dict, clientes: dict, accesorios: dict):
         print("=" * len(encabezado))
 
 
-
-
-def informe_resumen_anual_pesos(alquileres: dict, accesorios: dict):
-    """
-    Informe 3: Resumen de montos (pesos) por año y por mes (matricial).
-    (Función plantilla; completar la agregación).
-    """
-    print(">>> INFORME: RESUMEN ANUAL - PESOS")
-    print("Función plantilla: completar agregación según requisitos.")
-
-
 def informe_libre_eleccion(alquileres: dict, clientes: dict, accesorios: dict):
     """
     Informe 4: Listado a libre elección del equipo. Se puede listar las transacciones
@@ -508,7 +510,7 @@ def main():
     }
 
     accesorios = {
-        # atributo multivalor: 'Talles' -> dict de códigos de talles
+        # atributo multivalor: 'Talles'  de códigos de talles
         "P001": {"Nombre": "Esquí Adulto", "PrecioDiario": 5000, "Stock": 10, "PerdidosRotura": 0, "Talles": {"T01": True,"T02": True}, "Activo": True},
         "P002": {"Nombre": "Botas Adulto", "PrecioDiario": 3000, "Stock": 15, "PerdidosRotura": 1, "Talles": {"T02": True,"T03": True}, "Activo": True},
         "P003": {"Nombre": "Bastones", "PrecioDiario": 800, "Stock": 20, "PerdidosRotura": 0, "Talles": {}, "Activo": True},
@@ -522,7 +524,7 @@ def main():
     }
 
     talles = {
-        # atributo multivalor: 'Equivalencias' -> dict
+        # atributo multivalor: 'Equivalencias' 
         "T01": {"Nombre": "S", "Equivalencias": {"36": True,"38": True}, "Activo": True},
         "T02": {"Nombre": "M", "Equivalencias": {"40": True,"42": True}, "Activo": True},
         "T03": {"Nombre": "L", "Equivalencias": {"44": True,"46": True}, "Activo": True},
@@ -850,7 +852,7 @@ def main():
                     if opcionSub == "1":
                         talles = alta_talle(talles)
                     elif opcionSub == "2":
-                        talles = modificar_talle(talles)
+                        talles = modificar_talle(talles,accesorios)
                     elif opcionSub == "3":
                         talles = baja_logica_talle(talles)
                     elif opcionSub == "4":
