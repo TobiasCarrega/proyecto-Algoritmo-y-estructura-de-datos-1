@@ -32,7 +32,7 @@ def fecha_hora_actual():
     return time.strftime("%Y.%m.%d %H:%M:%S")
 
 
-def validar_entero_en_rango(texto_input: str, min_val: int, max_val: int) -> int:
+def validar_entero_en_rango(texto_input: str, min_val: int, max_val: int):
     """
     Pide por teclado un entero entre min_val y max_val (inclusive).
     Valida que la entrada sea numérica y esté en rango. Devuelve el entero aceptado.
@@ -54,17 +54,34 @@ def pausar():
 # ---------------------------
 # CRUD CLIENTES
 # ---------------------------
-def alta_cliente(clientes: dict) -> dict:
+def alta_cliente(clientes: dict):
     """
-    Alta lógico de cliente. Telefonos ahora como dict {telefono: True, ...}
+    Alta lógico de cliente. Código asignado automáticamente (C###).
+    Telefonos se almacenan como dict {telefono: True, ...}
+    Se obtiene el número del último cliente por slicing sobre la última clave.
     """
     print(">>> ALTA CLIENTE")
-    codigo = input("Código cliente (ej: C011): ").strip().upper()
-    if codigo == "" or codigo in clientes:
-        print("Código inválido o ya existe.")
-        return clientes
+
+    # determinar próximo código a partir del último elemento del dict (preserva orden en Python 3.7+)
+    if len(clientes) == 0:
+        next_n = 1
+    else:
+        ultima_clave = list(clientes.keys())[-1]      # p.ej. "C010"
+        numero_str = ultima_clave[1:]                 # slicing para capturar la parte numérica
+        if numero_str.isdigit():
+            next_n = int(numero_str) + 1
+        else:
+            # si el sufijo no es numérico, comenzar en 1
+            next_n = 1
+
+    codigo = f"C{next_n:03d}"
+    print(f"Código asignado: {codigo}")
 
     nombre = input("Nombre y Apellido: ").strip()
+    if nombre == "":
+        print("Nombre inválido.")
+        return clientes
+
     edad_str = input("Edad: ").strip()
     if not edad_str.isdigit():
         print("Error: La edad tiene que tener un numero entero.")
@@ -73,7 +90,6 @@ def alta_cliente(clientes: dict) -> dict:
     if edad < 18 or edad > 110:
         print("Error: La edad debe estar entre 18 y 110 años.")
         return clientes
-    
     #Validar DNI
     dni = input("DNI (hasta 8 números): ").strip()
     if dni != "":
@@ -86,35 +102,35 @@ def alta_cliente(clientes: dict) -> dict:
         if "@" not in email or "." not in email.split("@")[-1]:
             print("Error: el mail ingresado no es valido ")
             return clientes
-    
-    # multivalor: telefonos (ingresar separados por coma) -> dict
-    telefonos_raw = input("Teléfonos (separe por coma si hay más de uno): ").strip()
-    telefonos_lista = [t.strip() for t in telefonos_raw.split(",") if t.strip() != ""]
-    #Validar que sean solo numeros
-    for t in telefonos_lista:
-        if not t.isdigit():
-            print(f"Error: el teléfono '{t}' contiene caracteres no numéricos.")
-            return clientes
-    telefonos = {t: True for t in telefonos_lista}
 
+    telefonos_raw = input("Teléfonos (separe por coma si hay más de uno): ").strip()
+    telefonos = {t.strip(): True for t in telefonos_raw.split(",") if t.strip() != ""}
+    #Validar que sean solo numeros
+    for t in telefonos:
+        if not t.isdigit():
+             print(f"Error: el telefono '{t}' contiene caracteres no numéricos.")
+             return clientes
+    telefonos_listas = {t: True for t in telefonos}
+    
     clientes[codigo] = {
         "Nombre": nombre,
         "Edad": edad,
         "DNI": dni,
         "Email": email,
-        "Telefonos": telefonos,            # multivalor como dict
+        "Telefonos": telefonos,
         "Activo": True
     }
     print(f"Cliente {codigo} dado de alta.")
     return clientes
 
 
-def modificar_cliente(clientes: dict) -> dict:
+def modificar_cliente(clientes: dict):
     """
     Modifica datos de un cliente existente (si está activo o inactivo).
     Telefonos se almacenan como dict {telefono: True}
     """
     print(">>> MODIFICAR CLIENTE")
+    listar_clientes_activos(clientes)
     codigo = input("Código cliente a modificar: ").strip().upper()
     if codigo not in clientes:
         print("Cliente no encontrado.")
@@ -139,12 +155,13 @@ def modificar_cliente(clientes: dict) -> dict:
     return clientes
 
 
-def baja_logica_cliente(clientes: dict) -> dict:
+def baja_logica_cliente(clientes: dict):
     """
     Marca el cliente como inactivo (baja lógica).
     """
     print(">>> ELIMINAR (Baja lógica) CLIENTE")
-    codigo = input("Código cliente a dar de baja: ").strip()
+    print(">>> ej:codigo de cliente: C011")
+    codigo = input("Código cliente a dar de baja: ").strip().upper()
     if codigo not in clientes:
         print("Cliente no encontrado.")
         return clientes
@@ -166,17 +183,22 @@ def listar_clientes_activos(clientes: dict):
         if datos.get("Activo", False):
             telefonos = ", ".join(datos.get("Telefonos", {}).keys())
             print(f"{codigo:8} {datos.get('Nombre','')[:30]:30} {str(datos.get('Edad','')):4} {telefonos}")
+    print("-" * len(encabezado))
+
     # no return (solo visualización)
 
 
 # ---------------------------
 # CRUD ACCESORIOS / PRODUCTOS
 # ---------------------------
-def alta_accesorio(accesorios: dict) -> dict:
+def alta_accesorio(accesorios: dict) :
     """
     Alta de accesorio. Talles ahora como dict {talle_codigo: True, ...}
     """
     print(">>> ALTA ACCESORIO")
+    listar_productos_en_stock(accesorios)
+
+
     codigo = input("Código producto (ej: P011): ").strip()
     if codigo == "" or codigo in accesorios:
         print("Código inválido o ya existe.")
@@ -209,11 +231,13 @@ def alta_accesorio(accesorios: dict) -> dict:
     return accesorios
 
 
-def modificar_accesorio(accesorios: dict) -> dict:
+def modificar_accesorio(accesorios: dict) :
     """
     Modifica un accesorio existente. Talles como dict.
     """
     print(">>> MODIFICAR ACCESORIO")
+    listar_productos_en_stock(accesorios)
+
     codigo = input("Código producto a modificar: ").strip()
     if codigo not in accesorios:
         print("Producto no encontrado.")
@@ -237,7 +261,7 @@ def modificar_accesorio(accesorios: dict) -> dict:
     return accesorios
 
 
-def baja_logica_accesorio(accesorios: dict) -> dict:
+def baja_logica_accesorio(accesorios: dict) :
     """
     Marca un accesorio como inactivo (baja lógica).
     """
@@ -262,6 +286,8 @@ def listar_productos_en_stock(accesorios: dict):
     for codigo, p in accesorios.items():
         if p.get("Activo", False) and p.get("Stock", 0) > 0:
             print(f"{codigo:8} {p.get('Nombre','')[:30]:30} {str(p.get('Stock')):6} {str(p.get('PrecioDiario')):12}")
+    print("-" * len(encabezado))
+
 
 
 def listar_perdidos_rotos(accesorios: dict):
@@ -290,7 +316,7 @@ def listar_talles_producto(accesorios: dict):
 # ---------------------------
 # CRUD TALLES (Entidad maestra 3)
 # ---------------------------
-def alta_talle(talles: dict) -> dict:
+def alta_talle(talles: dict) :
     """
     Alta de talle. Equivalencias ahora dict {equiv: True}
     """
@@ -313,11 +339,13 @@ def alta_talle(talles: dict) -> dict:
     return talles
 
 
-def modificar_talle(talles: dict) -> dict:
+def modificar_talle(talles: dict, accesorios: dict) : 
     """
     Modifica un talle. Equivalencias como dict.
     """
     print(">>> MODIFICAR TALLE")
+    listar_productos_en_stock(accesorios)
+
     codigo = input("Código talle a modificar: ").strip()
     if codigo not in talles:
         print("Talle no encontrado.")
@@ -337,7 +365,7 @@ def modificar_talle(talles: dict) -> dict:
     return talles
 
 
-def baja_logica_talle(talles: dict) -> dict:
+def baja_logica_talle(talles: dict) :
     """
     Baja lógica de un talle.
     """
@@ -364,17 +392,7 @@ def listar_talles_activos(talles: dict):
 # ---------------------------
 # ENTIDAD TRANSACCIONES: ALQUILERES (2 diccionarios anidados)
 # ---------------------------
-def registrar_alquiler(alquileres: dict, clientes: dict, accesorios: dict) -> dict:
-    """
-    Registra una operación de alquiler en la estructura de transacciones.
-    Estructura propuesta (2 diccionarios anidados):
-      alquileres = {
-          '2025': { 'ALQ0001': { 'FechaHora': ..., 'Cliente': 'C001', 'Producto': 'P001',
-                                 'Cantidad': 2, 'PrecioUnit': 1200, 'Total': 2400 } , ... },
-          '2026': { ... }
-      }
-    Se registran automáticamente Fecha/Hora (string) y sólo los códigos maestros.
-    """
+def registrar_alquiler(alquileres: dict, clientes: dict, accesorios: dict) :
     print(">>> REGISTRAR ALQUILER")
     anio = time.strftime("%Y")
     # generar ID simple (se cuenta cantidad actual + 1)
@@ -382,12 +400,12 @@ def registrar_alquiler(alquileres: dict, clientes: dict, accesorios: dict) -> di
         alquileres[anio] = {}
 
     next_id = f"ALQ{len(alquileres[anio]) + 1:04d}"
-    codigo_cliente = input("Código cliente: ").strip()
+    codigo_cliente = input("Código cliente: ").strip().upper()
     if codigo_cliente not in clientes or not clientes[codigo_cliente].get("Activo", False):
         print("Cliente inválido o inactivo.")
         return alquileres
 
-    codigo_producto = input("Código producto: ").strip()
+    codigo_producto = input("Código producto: ").strip().upper()
     if codigo_producto not in accesorios or not accesorios[codigo_producto].get("Activo", False):
         print("Producto inválido o inactivo.")
         return alquileres
@@ -445,16 +463,19 @@ def listar_alquileres_mes_actual(alquileres: dict, clientes: dict, accesorios: d
             print(f"{fecha:20} {cliente_nombre[:20]:20} {producto_nombre[:25]:25} {str(datos.get('Cantidad')):6} {str(datos.get('PrecioUnit')):10} {str(datos.get('Total')):12}")
 
 
-# TODO: implementar funciones para informe matricial anual (cantidades y pesos)
-def informe_resumen_anual_cantidades(alquileres: dict, clientes: dict, accesorios: dict):
+def informe_resumen_anual(alquileres: dict, clientes: dict, accesorios: dict):
     print(">>> LISTADO DE ALQUILERES - ANUAL")
-    encabezado = f"{'Año':6}{'ID_Alquiler':15}{'Fecha/Hora':20}{'Cliente':20}{'Producto':25}{'Cant.':6}{'Unit.':10}{'Total':12}"
+    encabezado = f"{'Año':4}{'ID_Alquiler':12}{'Fecha/Hora':20}{'Cliente':20}{'Producto':25}{'Cant.':6}{'Unit.':10}{'Total':12}"
     print(encabezado)
     print("-" * len(encabezado))
 
-    # recorre todos los años
+    # recorrer todos los años
     for año, datos_anuales in alquileres.items():
-        # recorre los alquileres de ese año
+        contador = 0
+        recaudacion = 0
+        unidades = 0
+
+        # recorrer los alquileres de ese año
         for id_alq, datos in datos_anuales.items():
             fecha = datos.get("FechaHora", "")
             cliente_nombre = clientes.get(datos.get("Cliente"), {}).get("Nombre", datos.get("Cliente"))
@@ -463,17 +484,20 @@ def informe_resumen_anual_cantidades(alquileres: dict, clientes: dict, accesorio
             unitario = datos.get("PrecioUnit", 0)
             total = datos.get("Total", 0)
 
-            print(f"{año:6} {id_alq:12} {fecha:20} {cliente_nombre[:20]:20} {producto_nombre[:25]:25} {cantidad:6} {unitario:10} {total:12}")
+            # acumuladores
+            contador += 1
+            recaudacion += total
+            unidades += cantidad
 
+            # imprimir detalle
+            print(f"{año:4} {id_alq:12} {fecha:20} {cliente_nombre[:20]:20} {producto_nombre[:25]:25} {cantidad:6} {unitario:10} {total:12}")
 
-
-def informe_resumen_anual_pesos(alquileres: dict, accesorios: dict):
-    """
-    Informe 3: Resumen de montos (pesos) por año y por mes (matricial).
-    (Función plantilla; completar la agregación).
-    """
-    print(">>> INFORME: RESUMEN ANUAL - PESOS")
-    print("Función plantilla: completar agregación según requisitos.")
+        # resumen anual
+        print("-" * len(encabezado))
+        print(f">>> Total de alquileres en {año}: {contador}")
+        print(f">>> Unidades alquiladas en {año}: {unidades}")
+        print(f">>> Recaudación total en {año}: ${recaudacion}")
+        print("=" * len(encabezado))
 
 
 def informe_libre_eleccion(alquileres: dict, clientes: dict, accesorios: dict):
@@ -523,7 +547,7 @@ def main():
     }
 
     accesorios = {
-        # atributo multivalor: 'Talles' -> dict de códigos de talles
+        # atributo multivalor: 'Talles'  de códigos de talles
         "P001": {"Nombre": "Esquí Adulto", "PrecioDiario": 5000, "Stock": 10, "PerdidosRotura": 0, "Talles": {"T01": True,"T02": True}, "Activo": True},
         "P002": {"Nombre": "Botas Adulto", "PrecioDiario": 3000, "Stock": 15, "PerdidosRotura": 1, "Talles": {"T02": True,"T03": True}, "Activo": True},
         "P003": {"Nombre": "Bastones", "PrecioDiario": 800, "Stock": 20, "PerdidosRotura": 0, "Talles": {}, "Activo": True},
@@ -537,7 +561,7 @@ def main():
     }
 
     talles = {
-        # atributo multivalor: 'Equivalencias' -> dict
+        # atributo multivalor: 'Equivalencias' 
         "T01": {"Nombre": "S", "Equivalencias": {"36": True,"38": True}, "Activo": True},
         "T02": {"Nombre": "M", "Equivalencias": {"40": True,"42": True}, "Activo": True},
         "T03": {"Nombre": "L", "Equivalencias": {"44": True,"46": True}, "Activo": True},
@@ -865,7 +889,7 @@ def main():
                     if opcionSub == "1":
                         talles = alta_talle(talles)
                     elif opcionSub == "2":
-                        talles = modificar_talle(talles)
+                        talles = modificar_talle(talles,accesorios)
                     elif opcionSub == "3":
                         talles = baja_logica_talle(talles)
                     elif opcionSub == "4":
@@ -888,7 +912,7 @@ def main():
                     print("---------------------------")
                     print("[1] Registro de alquileres")
                     print("[2] Informes - Alquileres del Mes")
-                    print("[3] Informes - Resumen Anual (Cantidades / Pesos)")
+                    print("[3] Informes - Resumen Anual")
                     print("[4] Informe libre / Resumen stock")
                     print("[0] Volver al menú anterior")
                     print("---------------------------")
@@ -907,8 +931,7 @@ def main():
                     elif opcionSub == "2":
                         listar_alquileres_mes_actual(alquileres, clientes, accesorios)
                     elif opcionSub == "3":
-                        informe_resumen_anual_cantidades(alquileres, clientes, accesorios)
-                        informe_resumen_anual_pesos(alquileres, accesorios)
+                        informe_resumen_anual(alquileres, clientes, accesorios)
                     elif opcionSub == "4":
                         informe_libre_eleccion(alquileres, clientes, accesorios)
                         informe_stock_resumen(accesorios)
