@@ -66,10 +66,13 @@ def alta_cliente(clientes: dict) -> dict:
 
     nombre = input("Nombre y Apellido: ").strip()
     edad_str = input("Edad: ").strip()
-    if not edad_str.isdigit() or int(edad_str) < 18:
-        print("No se permiten clientes menores a 18 años.")
+    if not edad_str.isdigit():
+        print("Error: La edad tiene que tener un numero entero.")
         return clientes
     edad = int(edad_str)
+    if edad < 18 or edad > 110:
+        print("Error: La edad debe estar entre 18 y 110 años.")
+        return clientes
     
     #Validar DNI
     dni = input("DNI (hasta 8 números): ").strip()
@@ -97,8 +100,8 @@ def alta_cliente(clientes: dict) -> dict:
     clientes[codigo] = {
         "Nombre": nombre,
         "Edad": edad,
-        "DNI": input("DNI (opcional): ").strip(),
-        "Email": input("Email (opcional): ").strip(),
+        "DNI": dni,
+        "Email": email,
         "Telefonos": telefonos,            # multivalor como dict
         "Activo": True
     }
