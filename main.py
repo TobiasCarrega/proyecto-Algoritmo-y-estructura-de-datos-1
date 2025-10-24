@@ -611,7 +611,89 @@ def main():
                 "PrecioUnit": 1100,
                 "Total": 3300
             }
-        }
+        },
+        "2024": {
+            "ALQ1011": {
+                "FechaHora": "2024.08.01 09:10:00",
+                "Cliente": "C010",
+                "Producto": "P001",
+                "Cantidad": 1,
+            "PrecioUnit": 5000, 
+            "Total": 5000
+            },
+            "ALQ1012": {
+                "FechaHora": "2024.08.03 10:25:00",
+                "Cliente": "C009",
+                "Producto": "P004",
+                "Cantidad": 2, 
+                "PrecioUnit": 700, 
+                "Total": 1400
+                },
+            "ALQ1013": {
+                "FechaHora": "2024.08.05 11:40:00",
+                "Cliente": "C008",
+                "Producto": "P008",
+                "Cantidad": 3, 
+                "PrecioUnit": 250, 
+                "Total": 750
+                },
+            "ALQ1014": {
+                "FechaHora": "2024.08.07 12:55:00",
+                "Cliente": "C007",
+                "Producto": "P006",
+                "Cantidad": 1, 
+                "PrecioUnit": 1500, 
+                "Total": 1500
+                },
+            "ALQ1015": {
+                "FechaHora": "2024.08.09 14:10:00",
+                "Cliente": "C006",
+                "Producto": "P010",
+                "Cantidad": 2, 
+                "PrecioUnit": 1100, 
+                "Total": 2200
+                },
+            "ALQ1016": {
+                "FechaHora": "2024.08.11 15:30:00",
+                "Cliente": "C005",
+                "Producto": "P002",
+                "Cantidad": 2, 
+                "PrecioUnit": 3000, 
+                "Total": 6000
+                },
+            "ALQ1017": {
+                "FechaHora": "2024.08.13 16:45:00",
+                "Cliente": "C004",
+                "Producto": "P005",
+                "Cantidad": 1, 
+                "PrecioUnit": 900, 
+                "Total": 900
+                },
+            "ALQ1018": {
+                "FechaHora": "2024.08.15 17:55:00",
+                "Cliente": "C003",
+                "Producto": "P007",
+                "Cantidad": 2, 
+                "PrecioUnit": 300, 
+                "Total": 600
+                },
+            "ALQ1019": {
+                "FechaHora": "2024.08.17 18:25:00",
+                "Cliente": "C002",
+                "Producto": "P009",
+                "Cantidad": 1, 
+                "PrecioUnit": 1200, 
+                "Total": 1200
+                },
+            "ALQ1020": {
+                "FechaHora": "2024.08.19 19:05:00",
+                "Cliente": "C001",
+                "Producto": "P003",
+                "Cantidad": 4, 
+                "PrecioUnit": 800, 
+                "Total": 3200
+                }
+    }
     }
 
     #-------------------------------------------------
