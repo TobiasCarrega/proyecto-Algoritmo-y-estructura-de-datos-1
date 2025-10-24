@@ -343,16 +343,6 @@ def listar_talles_activos(talles: dict):
 # ENTIDAD TRANSACCIONES: ALQUILERES (2 diccionarios anidados)
 # ---------------------------
 def registrar_alquiler(alquileres: dict, clientes: dict, accesorios: dict) -> dict:
-    """
-    Registra una operación de alquiler en la estructura de transacciones.
-    Estructura propuesta (2 diccionarios anidados):
-      alquileres = {
-          '2025': { 'ALQ0001': { 'FechaHora': ..., 'Cliente': 'C001', 'Producto': 'P001',
-                                 'Cantidad': 2, 'PrecioUnit': 1200, 'Total': 2400 } , ... },
-          '2026': { ... }
-      }
-    Se registran automáticamente Fecha/Hora (string) y sólo los códigos maestros.
-    """
     print(">>> REGISTRAR ALQUILER")
     anio = time.strftime("%Y")
     # generar ID simple (se cuenta cantidad actual + 1)
@@ -423,16 +413,19 @@ def listar_alquileres_mes_actual(alquileres: dict, clientes: dict, accesorios: d
             print(f"{fecha:20} {cliente_nombre[:20]:20} {producto_nombre[:25]:25} {str(datos.get('Cantidad')):6} {str(datos.get('PrecioUnit')):10} {str(datos.get('Total')):12}")
 
 
-# TODO: implementar funciones para informe matricial anual (cantidades y pesos)
-def informe_resumen_anual_cantidades(alquileres: dict, clientes: dict, accesorios: dict):
+def informe_resumen_anual(alquileres: dict, clientes: dict, accesorios: dict):
     print(">>> LISTADO DE ALQUILERES - ANUAL")
-    encabezado = f"{'Año':6}{'ID_Alquiler':15}{'Fecha/Hora':20}{'Cliente':20}{'Producto':25}{'Cant.':6}{'Unit.':10}{'Total':12}"
+    encabezado = f"{'Año':4}{'ID_Alquiler':12}{'Fecha/Hora':20}{'Cliente':20}{'Producto':25}{'Cant.':6}{'Unit.':10}{'Total':12}"
     print(encabezado)
     print("-" * len(encabezado))
 
-    # recorre todos los años
+    # recorrer todos los años
     for año, datos_anuales in alquileres.items():
-        # recorre los alquileres de ese año
+        contador = 0
+        recaudacion = 0
+        unidades = 0
+
+        # recorrer los alquileres de ese año
         for id_alq, datos in datos_anuales.items():
             fecha = datos.get("FechaHora", "")
             cliente_nombre = clientes.get(datos.get("Cliente"), {}).get("Nombre", datos.get("Cliente"))
@@ -441,7 +434,21 @@ def informe_resumen_anual_cantidades(alquileres: dict, clientes: dict, accesorio
             unitario = datos.get("PrecioUnit", 0)
             total = datos.get("Total", 0)
 
-            print(f"{año:6} {id_alq:12} {fecha:20} {cliente_nombre[:20]:20} {producto_nombre[:25]:25} {cantidad:6} {unitario:10} {total:12}")
+            # acumuladores
+            contador += 1
+            recaudacion += total
+            unidades += cantidad
+
+            # imprimir detalle
+            print(f"{año:4} {id_alq:12} {fecha:20} {cliente_nombre[:20]:20} {producto_nombre[:25]:25} {cantidad:6} {unitario:10} {total:12}")
+
+        # resumen anual
+        print("-" * len(encabezado))
+        print(f">>> Total de alquileres en {año}: {contador}")
+        print(f">>> Unidades alquiladas en {año}: {unidades}")
+        print(f">>> Recaudación total en {año}: ${recaudacion}")
+        print("=" * len(encabezado))
+
 
 
 
@@ -866,7 +873,7 @@ def main():
                     print("---------------------------")
                     print("[1] Registro de alquileres")
                     print("[2] Informes - Alquileres del Mes")
-                    print("[3] Informes - Resumen Anual (Cantidades / Pesos)")
+                    print("[3] Informes - Resumen Anual")
                     print("[4] Informe libre / Resumen stock")
                     print("[0] Volver al menú anterior")
                     print("---------------------------")
@@ -885,8 +892,7 @@ def main():
                     elif opcionSub == "2":
                         listar_alquileres_mes_actual(alquileres, clientes, accesorios)
                     elif opcionSub == "3":
-                        informe_resumen_anual_cantidades(alquileres, clientes, accesorios)
-                        informe_resumen_anual_pesos(alquileres, accesorios)
+                        informe_resumen_anual(alquileres, clientes, accesorios)
                     elif opcionSub == "4":
                         informe_libre_eleccion(alquileres, clientes, accesorios)
                         informe_stock_resumen(accesorios)
