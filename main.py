@@ -64,7 +64,6 @@ def alta_cliente(clientes: dict):
         print("Código inválido o ya existe.")
         return clientes
 
-    nombre = input("Nombre y Apellido: ").strip().upper()
     edad_str = input("Edad: ").strip()
     if not edad_str.isdigit() or int(edad_str) < 18:
         print("No se permiten clientes menores a 18 años.")
