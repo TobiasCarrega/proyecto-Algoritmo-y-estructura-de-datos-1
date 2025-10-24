@@ -25,7 +25,7 @@ import time  # permitido en el enunciado para obtener fecha/hora
 # ---------------------------
 # Utilidades
 # ---------------------------
-def fecha_hora_actual() -> str:
+def fecha_hora_actual():
     """
     Devuelve la fecha/hora actual como string con formato "AAAA.MM.DD hh:mm:ss".
     """
@@ -56,12 +56,10 @@ def pausar():
 # ---------------------------
 def alta_cliente(clientes: dict) -> dict:
     """
-    Alta lógico de cliente. Valida edad >= 18 y datos básicos.
-    Cada cliente es un dict con clave (código string) y valor otro dict con atributos.
-    Un atributo multivalor: 'telefonos' -> lista de strings.
+    Alta lógico de cliente. Telefonos ahora como dict {telefono: True, ...}
     """
     print(">>> ALTA CLIENTE")
-    codigo = input("Código cliente (ej: C011): ").strip()
+    codigo = input("Código cliente (ej: C011): ").strip().upper()
     if codigo == "" or codigo in clientes:
         print("Código inválido o ya existe.")
         return clientes
@@ -71,18 +69,33 @@ def alta_cliente(clientes: dict) -> dict:
     if not edad_str.isdigit() or int(edad_str) < 18:
         print("No se permiten clientes menores a 18 años.")
         return clientes
-
     edad = int(edad_str)
-    # multivalor: telefonos (ingresar separados por coma)
+    
+    #Validar DNI
+    dni = input("DNI (hasta 8 números): ").strip()
+    if dni != "":
+        if not dni.isdigit() or len(dni) > 8:
+            print("Error: el DNI debe contener solo números y hasta 8 dígitos.")
+            return clientes
+    
+    email = input("Email (opcional): ").strip()
+    
+    # multivalor: telefonos (ingresar separados por coma) -> dict
     telefonos_raw = input("Teléfonos (separe por coma si hay más de uno): ").strip()
-    telefonos = [t.strip() for t in telefonos_raw.split(",") if t.strip() != ""]
+    telefonos_lista = [t.strip() for t in telefonos_raw.split(",") if t.strip() != ""]
+    #Validar que sean solo numeros
+    for t in telefonos_lista:
+        if not t.isdigit():
+            print(f"Error: el teléfono '{t}' contiene caracteres no numéricos.")
+            return clientes
+    telefonos = {t: True for t in telefonos_lista}
 
     clientes[codigo] = {
         "Nombre": nombre,
         "Edad": edad,
         "DNI": input("DNI (opcional): ").strip(),
         "Email": input("Email (opcional): ").strip(),
-        "Telefonos": telefonos,            # multivalor
+        "Telefonos": telefonos,            # multivalor como dict
         "Activo": True
     }
     print(f"Cliente {codigo} dado de alta.")
@@ -92,9 +105,10 @@ def alta_cliente(clientes: dict) -> dict:
 def modificar_cliente(clientes: dict) -> dict:
     """
     Modifica datos de un cliente existente (si está activo o inactivo).
+    Telefonos se almacenan como dict {telefono: True}
     """
     print(">>> MODIFICAR CLIENTE")
-    codigo = input("Código cliente a modificar: ").strip()
+    codigo = input("Código cliente a modificar: ").strip().upper()
     if codigo not in clientes:
         print("Cliente no encontrado.")
         return clientes
@@ -109,9 +123,9 @@ def modificar_cliente(clientes: dict) -> dict:
     if dni != "":
         cli["DNI"] = dni
 
-    telefonos_raw = input(f"Teléfonos actuales {cli.get('Telefonos')}. Nuevos (coma sep): ").strip()
+    telefonos_raw = input(f"Teléfonos actuales {list(cli.get('Telefonos', {}).keys())}. Nuevos (coma sep): ").strip()
     if telefonos_raw != "":
-        cli["Telefonos"] = [t.strip() for t in telefonos_raw.split(",") if t.strip() != ""]
+        cli["Telefonos"] = {t.strip(): True for t in telefonos_raw.split(",") if t.strip() != ""}
 
     clientes[codigo] = cli
     print(f"Cliente {codigo} modificado.")
@@ -135,6 +149,7 @@ def baja_logica_cliente(clientes: dict) -> dict:
 def listar_clientes_activos(clientes: dict):
     """
     Muestra por pantalla los clientes con 'Activo' == True.
+    Telefonos ahora se obtienen de las claves del dict.
     """
     print(">>> LISTADO DE CLIENTES ACTIVOS")
     encabezado = f"{'CÓDIGO':8} {'NOMBRE':30} {'EDAD':4} {'TELÉFONOS'}"
@@ -142,7 +157,7 @@ def listar_clientes_activos(clientes: dict):
     print("-" * len(encabezado))
     for codigo, datos in clientes.items():
         if datos.get("Activo", False):
-            telefonos = ", ".join(datos.get("Telefonos", []))
+            telefonos = ", ".join(datos.get("Telefonos", {}).keys())
             print(f"{codigo:8} {datos.get('Nombre','')[:30]:30} {str(datos.get('Edad','')):4} {telefonos}")
     # no return (solo visualización)
 
@@ -152,8 +167,7 @@ def listar_clientes_activos(clientes: dict):
 # ---------------------------
 def alta_accesorio(accesorios: dict) -> dict:
     """
-    Alta de accesorio. Atributo multivalor: 'Talles' -> lista de códigos de talles.
-    Mantiene 'Stock', 'PrecioDiario', 'PerdidosRotura' (int).
+    Alta de accesorio. Talles ahora como dict {talle_codigo: True, ...}
     """
     print(">>> ALTA ACCESORIO")
     codigo = input("Código producto (ej: P011): ").strip()
@@ -174,14 +188,14 @@ def alta_accesorio(accesorios: dict) -> dict:
     stock = int(stock_raw)
 
     talles_raw = input("Talles disponibles (separar por coma): ").strip()
-    talles = [t.strip() for t in talles_raw.split(",") if t.strip() != ""]
+    talles = {t.strip(): True for t in talles_raw.split(",") if t.strip() != ""}
 
     accesorios[codigo] = {
         "Nombre": nombre,
         "PrecioDiario": precio,
         "Stock": stock,
         "PerdidosRotura": 0,
-        "Talles": talles,   # multivalor
+        "Talles": talles,   # multivalor como dict
         "Activo": True
     }
     print(f"Accesorio {codigo} cargado.")
@@ -190,7 +204,7 @@ def alta_accesorio(accesorios: dict) -> dict:
 
 def modificar_accesorio(accesorios: dict) -> dict:
     """
-    Modifica un accesorio existente.
+    Modifica un accesorio existente. Talles como dict.
     """
     print(">>> MODIFICAR ACCESORIO")
     codigo = input("Código producto a modificar: ").strip()
@@ -207,9 +221,9 @@ def modificar_accesorio(accesorios: dict) -> dict:
     if precio_raw.isdigit():
         prod["PrecioDiario"] = int(precio_raw)
 
-    talles_raw = input(f"Talles actuales {prod.get('Talles')}. Nuevos (coma sep): ").strip()
+    talles_raw = input(f"Talles actuales {list(prod.get('Talles', {}).keys())}. Nuevos (coma sep): ").strip()
     if talles_raw != "":
-        prod["Talles"] = [t.strip() for t in talles_raw.split(",") if t.strip() != ""]
+        prod["Talles"] = {t.strip(): True for t in talles_raw.split(",") if t.strip() != ""}
 
     accesorios[codigo] = prod
     print(f"Producto {codigo} modificado.")
@@ -245,7 +259,7 @@ def listar_productos_en_stock(accesorios: dict):
 
 def listar_perdidos_rotos(accesorios: dict):
     """
-    Lista ítems perdidos/rotos (campo PerdidossRotura > 0).
+    Lista ítems perdidos/rotos (campo PerdidosRotura > 0).
     """
     print(">>> LISTADO DE ÍTEMS PERDIDOS / ROTOS")
     encabezado = f"{'CÓDIGO':8} {'NOMBRE':30} {'PERDIDOS/ROTOS':15}"
@@ -258,12 +272,12 @@ def listar_perdidos_rotos(accesorios: dict):
 
 def listar_talles_producto(accesorios: dict):
     """
-    Muestra talles disponibles por producto.
+    Muestra talles disponibles por producto (ahora claves del dict).
     """
     print(">>> LISTADO DE TALLES POR PRODUCTO")
     for codigo, p in accesorios.items():
         if p.get("Activo", False):
-            print(f"{codigo} - {p.get('Nombre')}: {', '.join(p.get('Talles', []))}")
+            print(f"{codigo} - {p.get('Nombre')}: {', '.join(p.get('Talles', {}).keys())}")
 
 
 # ---------------------------
@@ -271,7 +285,7 @@ def listar_talles_producto(accesorios: dict):
 # ---------------------------
 def alta_talle(talles: dict) -> dict:
     """
-    Alta de talle. Atributo multivalor: 'Equivalencias' (p.ej. S, M, L -> numeric codes).
+    Alta de talle. Equivalencias ahora dict {equiv: True}
     """
     print(">>> ALTA TALLE")
     codigo = input("Código talle (ej: T011): ").strip()
@@ -281,11 +295,11 @@ def alta_talle(talles: dict) -> dict:
 
     nombre = input("Nombre del talle (ej: S, M, L): ").strip()
     equivalencias_raw = input("Equivalencias (separar por coma): ").strip()
-    equivalencias = [e.strip() for e in equivalencias_raw.split(",") if e.strip() != ""]
+    equivalencias = {e.strip(): True for e in equivalencias_raw.split(",") if e.strip() != ""}
 
     talles[codigo] = {
         "Nombre": nombre,
-        "Equivalencias": equivalencias,  # multivalor
+        "Equivalencias": equivalencias,  # multivalor como dict
         "Activo": True
     }
     print(f"Talle {codigo} dado de alta.")
@@ -294,7 +308,7 @@ def alta_talle(talles: dict) -> dict:
 
 def modificar_talle(talles: dict) -> dict:
     """
-    Modifica un talle.
+    Modifica un talle. Equivalencias como dict.
     """
     print(">>> MODIFICAR TALLE")
     codigo = input("Código talle a modificar: ").strip()
@@ -307,9 +321,9 @@ def modificar_talle(talles: dict) -> dict:
     if nombre != "":
         t["Nombre"] = nombre
 
-    equivalencias_raw = input(f"Equivalencias actuales {t.get('Equivalencias')}. Nuevas (coma sep): ").strip()
+    equivalencias_raw = input(f"Equivalencias actuales {list(t.get('Equivalencias', {}).keys())}. Nuevas (coma sep): ").strip()
     if equivalencias_raw != "":
-        t["Equivalencias"] = [e.strip() for e in equivalencias_raw.split(",") if e.strip() != ""]
+        t["Equivalencias"] = {e.strip(): True for e in equivalencias_raw.split(",") if e.strip() != ""}
 
     talles[codigo] = t
     print(f"Talle {codigo} modificado.")
@@ -337,7 +351,7 @@ def listar_talles_activos(talles: dict):
     print(">>> LISTADO DE TALLES ACTIVOS")
     for codigo, t in talles.items():
         if t.get("Activo", False):
-            print(f"{codigo}: {t.get('Nombre')} - Equiv: {', '.join(t.get('Equivalencias', []))}")
+            print(f"{codigo}: {t.get('Nombre')} - Equiv: {', '.join(t.get('Equivalencias', {}).keys())}")
 
 
 # ---------------------------
@@ -425,13 +439,25 @@ def listar_alquileres_mes_actual(alquileres: dict, clientes: dict, accesorios: d
 
 
 # TODO: implementar funciones para informe matricial anual (cantidades y pesos)
-def informe_resumen_anual_cantidades(alquileres: dict, accesorios: dict):
-    """
-    Informe 2: Resumen de cantidad de operaciones por año y por mes (matricial).
-    (Función plantilla; completar la agregación).
-    """
-    print(">>> INFORME: RESUMEN ANUAL - CANTIDADES")
-    print("Función plantilla: completar agregación según requisitos.")
+def informe_resumen_anual_cantidades(alquileres: dict, clientes: dict, accesorios: dict):
+    print(">>> LISTADO DE ALQUILERES - ANUAL")
+    encabezado = f"{'Año':6}{'ID_Alquiler':15}{'Fecha/Hora':20}{'Cliente':20}{'Producto':25}{'Cant.':6}{'Unit.':10}{'Total':12}"
+    print(encabezado)
+    print("-" * len(encabezado))
+
+    # recorre todos los años
+    for año, datos_anuales in alquileres.items():
+        # recorre los alquileres de ese año
+        for id_alq, datos in datos_anuales.items():
+            fecha = datos.get("FechaHora", "")
+            cliente_nombre = clientes.get(datos.get("Cliente"), {}).get("Nombre", datos.get("Cliente"))
+            producto_nombre = accesorios.get(datos.get("Producto"), {}).get("Nombre", datos.get("Producto"))
+            cantidad = datos.get("Cantidad", 0)
+            unitario = datos.get("PrecioUnit", 0)
+            total = datos.get("Total", 0)
+
+            print(f"{año:6} {id_alq:12} {fecha:20} {cliente_nombre[:20]:20} {producto_nombre[:25]:25} {cantidad:6} {unitario:10} {total:12}")
+
 
 
 def informe_resumen_anual_pesos(alquileres: dict, accesorios: dict):
@@ -465,7 +491,7 @@ def informe_stock_resumen(accesorios: dict):
     print(encabezado)
     print("-" * len(encabezado))
     for codigo, p in accesorios.items():
-        print(f"{codigo:8} {p.get('Nombre','')[:30]:30} {str(p.get('Stock')):6} {str(p.get('PerdidosRotura')):15}")
+        print(f"{codigo:8} {p.get('Nombre',''):30} {str(p.get('Stock')):6} {str(p.get('PerdidosRotura')):15}")
 
 
 #----------------------------------------------------------------------------------------------
@@ -476,58 +502,224 @@ def main():
     # Inicialización de variables (3 diccionarios de diccionarios - entidades maestras)
     #-------------------------------------------------
     clientes = {
-        # clave: código string -> valor: dict atributos (incluye 'Telefonos' list)
-        "C001": {"Nombre": "Gonzalo Perez", "Edad": 28, "DNI": "30111222", "Email": "gonzalo@example.com", "Telefonos": ["3411234567"], "Activo": True},
-        "C002": {"Nombre": "María López", "Edad": 34, "DNI": "30122333", "Email": "maria@example.com", "Telefonos": ["3412345678","3419876543"], "Activo": True},
-        "C003": {"Nombre": "Juan García", "Edad": 45, "DNI": "30133444", "Email": "", "Telefonos": ["3415550000"], "Activo": True},
-        "C004": {"Nombre": "Lucía Fernández", "Edad": 22, "DNI": "30144555", "Email": "lucia@example.com", "Telefonos": ["3416661111"], "Activo": True},
-        "C005": {"Nombre": "Carlos Sánchez", "Edad": 50, "DNI": "30155666", "Email": "", "Telefonos": ["3417772222"], "Activo": True},
-        "C006": {"Nombre": "Verónica Ruiz", "Edad": 29, "DNI": "30166777", "Email": "vero@example.com", "Telefonos": ["3418883333","3419994444"], "Activo": True},
-        "C007": {"Nombre": "Diego Martín", "Edad": 31, "DNI": "30177888", "Email": "", "Telefonos": ["3411010101"], "Activo": True},
-        "C008": {"Nombre": "Romina Díaz", "Edad": 27, "DNI": "30188999", "Email": "romi@example.com", "Telefonos": ["3411212121"], "Activo": True},
-        "C009": {"Nombre": "Pedro Alvarez", "Edad": 38, "DNI": "30199000", "Email": "", "Telefonos": ["3411313131"], "Activo": True},
-        "C010": {"Nombre": "Ana Molina", "Edad": 24, "DNI": "30200111", "Email": "ana@example.com", "Telefonos": ["3411414141"], "Activo": True}
+        # clave: código string -> valor: dict atributos (incluye 'Telefonos' dict)
+        "C001": {"Nombre": "Gonzalo Perez", "Edad": 28, "DNI": "30111222", "Email": "gonzalo@example.com", "Telefonos": {"3411234567": True}, "Activo": True},
+        "C002": {"Nombre": "María López", "Edad": 34, "DNI": "30122333", "Email": "maria@example.com", "Telefonos": {"3412345678": True,"3419876543": True}, "Activo": True},
+        "C003": {"Nombre": "Juan García", "Edad": 45, "DNI": "30133444", "Email": "", "Telefonos": {"3415550000": True}, "Activo": True},
+        "C004": {"Nombre": "Lucía Fernández", "Edad": 22, "DNI": "30144555", "Email": "lucia@example.com", "Telefonos": {"3416661111": True}, "Activo": True},
+        "C005": {"Nombre": "Carlos Sánchez", "Edad": 50, "DNI": "30155666", "Email": "", "Telefonos": {"3417772222": True}, "Activo": True},
+        "C006": {"Nombre": "Verónica Ruiz", "Edad": 29, "DNI": "30166777", "Email": "vero@example.com", "Telefonos": {"3418883333": True,"3419994444": True}, "Activo": True},
+        "C007": {"Nombre": "Diego Martín", "Edad": 31, "DNI": "30177888", "Email": "", "Telefonos": {"3411010101": True}, "Activo": True},
+        "C008": {"Nombre": "Romina Díaz", "Edad": 27, "DNI": "30188999", "Email": "romi@example.com", "Telefonos": {"3411212121": True}, "Activo": True},
+        "C009": {"Nombre": "Pedro Alvarez", "Edad": 38, "DNI": "30199000", "Email": "", "Telefonos": {"3411313131": True}, "Activo": True},
+        "C010": {"Nombre": "Ana Molina", "Edad": 24, "DNI": "30200111", "Email": "ana@example.com", "Telefonos": {"3411414141": True}, "Activo": True}
     }
 
     accesorios = {
-        # atributo multivalor: 'Talles' -> lista de códigos de talles
-        "P001": {"Nombre": "Esquí Adulto", "PrecioDiario": 5000, "Stock": 10, "PerdidosRotura": 0, "Talles": ["T01","T02"], "Activo": True},
-        "P002": {"Nombre": "Botas Adulto", "PrecioDiario": 3000, "Stock": 15, "PerdidosRotura": 1, "Talles": ["T02","T03"], "Activo": True},
-        "P003": {"Nombre": "Bastones", "PrecioDiario": 800, "Stock": 20, "PerdidosRotura": 0, "Talles": [], "Activo": True},
-        "P004": {"Nombre": "Casco", "PrecioDiario": 700, "Stock": 25, "PerdidosRotura": 0, "Talles": ["T01","T03"], "Activo": True},
-        "P005": {"Nombre": "Pantalón térmico", "PrecioDiario": 900, "Stock": 12, "PerdidosRotura": 0, "Talles": ["T02","T03","T04"], "Activo": True},
-        "P006": {"Nombre": "Campera térmica", "PrecioDiario": 1500, "Stock": 8, "PerdidosRotura": 0, "Talles": ["T03"], "Activo": True},
-        "P007": {"Nombre": "Guantes", "PrecioDiario": 300, "Stock": 30, "PerdidosRotura": 2, "Talles": ["T01","T02"], "Activo": True},
-        "P008": {"Nombre": "Gafas", "PrecioDiario": 250, "Stock": 40, "PerdidosRotura": 0, "Talles": [], "Activo": True},
-        "P009": {"Nombre": "Protector espalda", "PrecioDiario": 1200, "Stock": 5, "PerdidosRotura": 0, "Talles": ["T02"], "Activo": True},
-        "P010": {"Nombre": "Mochila porta esquí", "PrecioDiario": 1100, "Stock": 7, "PerdidosRotura": 0, "Talles": [], "Activo": True}
+        # atributo multivalor: 'Talles' -> dict de códigos de talles
+        "P001": {"Nombre": "Esquí Adulto", "PrecioDiario": 5000, "Stock": 10, "PerdidosRotura": 0, "Talles": {"T01": True,"T02": True}, "Activo": True},
+        "P002": {"Nombre": "Botas Adulto", "PrecioDiario": 3000, "Stock": 15, "PerdidosRotura": 1, "Talles": {"T02": True,"T03": True}, "Activo": True},
+        "P003": {"Nombre": "Bastones", "PrecioDiario": 800, "Stock": 20, "PerdidosRotura": 0, "Talles": {}, "Activo": True},
+        "P004": {"Nombre": "Casco", "PrecioDiario": 700, "Stock": 25, "PerdidosRotura": 0, "Talles": {"T01": True,"T03": True}, "Activo": True},
+        "P005": {"Nombre": "Pantalón térmico", "PrecioDiario": 900, "Stock": 12, "PerdidosRotura": 0, "Talles": {"T02": True,"T03": True,"T04": True}, "Activo": True},
+        "P006": {"Nombre": "Campera térmica", "PrecioDiario": 1500, "Stock": 8, "PerdidosRotura": 0, "Talles": {"T03": True}, "Activo": True},
+        "P007": {"Nombre": "Guantes", "PrecioDiario": 300, "Stock": 30, "PerdidosRotura": 2, "Talles": {"T01": True,"T02": True}, "Activo": True},
+        "P008": {"Nombre": "Gafas", "PrecioDiario": 250, "Stock": 40, "PerdidosRotura": 0, "Talles": {}, "Activo": True},
+        "P009": {"Nombre": "Protector espalda", "PrecioDiario": 1200, "Stock": 5, "PerdidosRotura": 0, "Talles": {"T02": True}, "Activo": True},
+        "P010": {"Nombre": "Mochila porta esquí", "PrecioDiario": 1100, "Stock": 7, "PerdidosRotura": 0, "Talles": {}, "Activo": True}
     }
 
     talles = {
-        # atributo multivalor: 'Equivalencias' -> lista
-        "T01": {"Nombre": "S", "Equivalencias": ["36","38"], "Activo": True},
-        "T02": {"Nombre": "M", "Equivalencias": ["40","42"], "Activo": True},
-        "T03": {"Nombre": "L", "Equivalencias": ["44","46"], "Activo": True},
-        "T04": {"Nombre": "XL", "Equivalencias": ["48","50"], "Activo": True},
-        "T05": {"Nombre": "Niño XS", "Equivalencias": ["28","30"], "Activo": True},
-        "T06": {"Nombre": "Niño S", "Equivalencias": ["32","34"], "Activo": True},
-        "T07": {"Nombre": "Unisex único", "Equivalencias": [], "Activo": True},
-        "T08": {"Nombre": "Extra L", "Equivalencias": ["52"], "Activo": True},
-        "T09": {"Nombre": "Junior", "Equivalencias": ["30","32"], "Activo": True},
-        "T10": {"Nombre": "Bebe", "Equivalencias": ["24"], "Activo": True}
+        # atributo multivalor: 'Equivalencias' -> dict
+        "T01": {"Nombre": "S", "Equivalencias": {"36": True,"38": True}, "Activo": True},
+        "T02": {"Nombre": "M", "Equivalencias": {"40": True,"42": True}, "Activo": True},
+        "T03": {"Nombre": "L", "Equivalencias": {"44": True,"46": True}, "Activo": True},
+        "T04": {"Nombre": "XL", "Equivalencias": {"48": True,"50": True}, "Activo": True},
+        "T05": {"Nombre": "Niño XS", "Equivalencias": {"28": True,"30": True}, "Activo": True},
+        "T06": {"Nombre": "Niño S", "Equivalencias": {"32": True,"34": True}, "Activo": True},
+        "T07": {"Nombre": "Unisex único", "Equivalencias": {}, "Activo": True},
+        "T08": {"Nombre": "Extra L", "Equivalencias": {"52": True}, "Activo": True},
+        "T09": {"Nombre": "Junior", "Equivalencias": {"30": True,"32": True}, "Activo": True},
+        "T10": {"Nombre": "Bebe", "Equivalencias": {"24": True}, "Activo": True}
     }
 
-    # Entidad transacciones: alquileres -> 2 diccionarios anidados (año -> id -> datos)
     alquileres = {
-        # Ejemplo inicial vacío; se cargan por año. Estructura: alquileres['2025'] = {'ALQ0001': {...}, ...}
+        # Ejemplo inicial con 10 operaciones (año 2025) siguiendo la estructura usada en registrar_alquiler()
+        "2025": {
+            "ALQ0001": {
+                "FechaHora": "2025.10.01 09:12:00",
+                "Cliente": "C001",
+                "Producto": "P001",
+                "Cantidad": 1,
+                "PrecioUnit": 5000,
+                "Total": 5000
+            },
+            "ALQ0002": {
+                "FechaHora": "2025.10.02 10:30:00",
+                "Cliente": "C002",
+                "Producto": "P002",
+                "Cantidad": 2,
+                "PrecioUnit": 3000,
+                "Total": 6000
+            },
+            "ALQ0003": {
+                "FechaHora": "2025.10.03 11:00:00",
+                "Cliente": "C003",
+                "Producto": "P003",
+                "Cantidad": 3,
+                "PrecioUnit": 800,
+                "Total": 2400
+            },
+            "ALQ0004": {
+                "FechaHora": "2025.10.04 12:15:00",
+                "Cliente": "C004",
+                "Producto": "P004",
+                "Cantidad": 1,
+                "PrecioUnit": 700,
+                "Total": 700
+            },
+            "ALQ0005": {
+                "FechaHora": "2025.10.05 13:45:00",
+                "Cliente": "C005",
+                "Producto": "P005",
+                "Cantidad": 2,
+                "PrecioUnit": 900,
+                "Total": 1800
+            },
+            "ALQ0006": {
+                "FechaHora": "2025.10.06 14:20:00",
+                "Cliente": "C006",
+                "Producto": "P006",
+                "Cantidad": 1,
+                "PrecioUnit": 1500,
+                "Total": 1500
+            },
+            "ALQ0007": {
+                "FechaHora": "2025.10.07 15:05:00",
+                "Cliente": "C007",
+                "Producto": "P007",
+                "Cantidad": 4,
+                "PrecioUnit": 300,
+                "Total": 1200
+            },
+            "ALQ0008": {
+                "FechaHora": "2025.10.08 16:40:00",
+                "Cliente": "C008",
+                "Producto": "P008",
+                "Cantidad": 2,
+                "PrecioUnit": 250,
+                "Total": 500
+            },
+            "ALQ0009": {
+                "FechaHora": "2025.10.09 17:10:00",
+                "Cliente": "C009",
+                "Producto": "P009",
+                "Cantidad": 1,
+                "PrecioUnit": 1200,
+                "Total": 1200
+            },
+            "ALQ0010": {
+                "FechaHora": "2025.10.10 18:00:00",
+                "Cliente": "C010",
+                "Producto": "P010",
+                "Cantidad": 3,
+                "PrecioUnit": 1100,
+                "Total": 3300
+            }
+        },
+        "2024": {
+            "ALQ1011": {
+                "FechaHora": "2024.08.01 09:10:00",
+                "Cliente": "C010",
+                "Producto": "P001",
+                "Cantidad": 1,
+            "PrecioUnit": 5000, 
+            "Total": 5000
+            },
+            "ALQ1012": {
+                "FechaHora": "2024.08.03 10:25:00",
+                "Cliente": "C009",
+                "Producto": "P004",
+                "Cantidad": 2, 
+                "PrecioUnit": 700, 
+                "Total": 1400
+                },
+            "ALQ1013": {
+                "FechaHora": "2024.08.05 11:40:00",
+                "Cliente": "C008",
+                "Producto": "P008",
+                "Cantidad": 3, 
+                "PrecioUnit": 250, 
+                "Total": 750
+                },
+            "ALQ1014": {
+                "FechaHora": "2024.08.07 12:55:00",
+                "Cliente": "C007",
+                "Producto": "P006",
+                "Cantidad": 1, 
+                "PrecioUnit": 1500, 
+                "Total": 1500
+                },
+            "ALQ1015": {
+                "FechaHora": "2024.08.09 14:10:00",
+                "Cliente": "C006",
+                "Producto": "P010",
+                "Cantidad": 2, 
+                "PrecioUnit": 1100, 
+                "Total": 2200
+                },
+            "ALQ1016": {
+                "FechaHora": "2024.08.11 15:30:00",
+                "Cliente": "C005",
+                "Producto": "P002",
+                "Cantidad": 2, 
+                "PrecioUnit": 3000, 
+                "Total": 6000
+                },
+            "ALQ1017": {
+                "FechaHora": "2024.08.13 16:45:00",
+                "Cliente": "C004",
+                "Producto": "P005",
+                "Cantidad": 1, 
+                "PrecioUnit": 900, 
+                "Total": 900
+                },
+            "ALQ1018": {
+                "FechaHora": "2024.08.15 17:55:00",
+                "Cliente": "C003",
+                "Producto": "P007",
+                "Cantidad": 2, 
+                "PrecioUnit": 300, 
+                "Total": 600
+                },
+            "ALQ1019": {
+                "FechaHora": "2024.08.17 18:25:00",
+                "Cliente": "C002",
+                "Producto": "P009",
+                "Cantidad": 1, 
+                "PrecioUnit": 1200, 
+                "Total": 1200
+                },
+            "ALQ1020": {
+                "FechaHora": "2024.08.19 19:05:00",
+                "Cliente": "C001",
+                "Producto": "P003",
+                "Cantidad": 4, 
+                "PrecioUnit": 800, 
+                "Total": 3200
+                }
+    }
     }
 
     #-------------------------------------------------
-    # Bloque de menú (según plantilla)
+    # Bloque de menú 
     #-------------------------------------------------
-    while True:
-        while True:
-            opciones = 5
+    running = True
+    while running:
+        opciones = 5
+        opcionMenuPrincipal = None
+        valido = False
+        while not valido:
             print()
             print("---------------------------")
             print("MENÚ PRINCIPAL")
@@ -539,21 +731,24 @@ def main():
             print("[0] Salir del programa")
             print("---------------------------")
             opcionMenuPrincipal = input("Seleccione una opción: ")
-            if opcionMenuPrincipal in [str(i) for i in range(0, opciones)]:  # 0..4 válidos
-                break
+            if opcionMenuPrincipal in [str(i) for i in range(0, opciones)]:
+                valido = True
             else:
                 input("Opción inválida. Presione ENTER para volver a seleccionar.")
         print()
 
         if opcionMenuPrincipal == "0":
             print("Saliendo...")
-            exit()
+            running = False
 
         elif opcionMenuPrincipal == "1":
-            # Submenú Clientes
-            while True:
-                while True:
-                    opciones_sub = 4
+            # Submenú Clientes 
+            clientes_running = True
+            while clientes_running:
+                opciones_sub = 4
+                opcionSub = None
+                valido_sub = False
+                while not valido_sub:
                     print()
                     print("---------------------------")
                     print("MENÚ > GESTIÓN DE CLIENTES")
@@ -566,30 +761,34 @@ def main():
                     print("---------------------------")
                     opcionSub = input("Seleccione una opción: ")
                     if opcionSub in [str(i) for i in range(0, opciones_sub + 1)]:
-                        break
+                        valido_sub = True
                     else:
                         input("Opción inválida. Presione ENTER para volver a seleccionar.")
                 print()
 
                 if opcionSub == "0":
-                    break
-                elif opcionSub == "1":
-                    clientes = alta_cliente(clientes)
-                elif opcionSub == "2":
-                    clientes = modificar_cliente(clientes)
-                elif opcionSub == "3":
-                    clientes = baja_logica_cliente(clientes)
-                elif opcionSub == "4":
-                    listar_clientes_activos(clientes)
+                    clientes_running = False
+                else:
+                    if opcionSub == "1":
+                        clientes = alta_cliente(clientes)
+                    elif opcionSub == "2":
+                        clientes = modificar_cliente(clientes)
+                    elif opcionSub == "3":
+                        clientes = baja_logica_cliente(clientes)
+                    elif opcionSub == "4":
+                        listar_clientes_activos(clientes)
 
-                pausar()
-                print("\n\n")
+                    pausar()
+                    print("\n\n")
 
         elif opcionMenuPrincipal == "2":
-            # Submenú Accesorios
-            while True:
-                while True:
-                    opciones_sub = 6
+            # Submenú Accesorios 
+            accesorios_running = True
+            while accesorios_running:
+                opciones_sub = 6
+                opcionSub = None
+                valido_sub = False
+                while not valido_sub:
                     print()
                     print("---------------------------")
                     print("MENÚ > GESTIÓN DE ACCESORIOS")
@@ -604,34 +803,38 @@ def main():
                     print("---------------------------")
                     opcionSub = input("Seleccione una opción: ")
                     if opcionSub in [str(i) for i in range(0, opciones_sub + 1)]:
-                        break
+                        valido_sub = True
                     else:
                         input("Opción inválida. Presione ENTER para volver a seleccionar.")
                 print()
 
                 if opcionSub == "0":
-                    break
-                elif opcionSub == "1":
-                    accesorios = alta_accesorio(accesorios)
-                elif opcionSub == "2":
-                    accesorios = modificar_accesorio(accesorios)
-                elif opcionSub == "3":
-                    accesorios = baja_logica_accesorio(accesorios)
-                elif opcionSub == "4":
-                    listar_productos_en_stock(accesorios)
-                elif opcionSub == "5":
-                    listar_perdidos_rotos(accesorios)
-                elif opcionSub == "6":
-                    listar_talles_producto(accesorios)
+                    accesorios_running = False
+                else:
+                    if opcionSub == "1":
+                        accesorios = alta_accesorio(accesorios)
+                    elif opcionSub == "2":
+                        accesorios = modificar_accesorio(accesorios)
+                    elif opcionSub == "3":
+                        accesorios = baja_logica_accesorio(accesorios)
+                    elif opcionSub == "4":
+                        listar_productos_en_stock(accesorios)
+                    elif opcionSub == "5":
+                        listar_perdidos_rotos(accesorios)
+                    elif opcionSub == "6":
+                        listar_talles_producto(accesorios)
 
-                pausar()
-                print("\n\n")
+                    pausar()
+                    print("\n\n")
 
         elif opcionMenuPrincipal == "3":
-            # Submenú Talles
-            while True:
-                while True:
-                    opciones_sub = 4
+            # Submenú Talles 
+            talles_running = True
+            while talles_running:
+                opciones_sub = 4
+                opcionSub = None
+                valido_sub = False
+                while not valido_sub:
                     print()
                     print("---------------------------")
                     print("MENÚ > GESTIÓN DE TALLES")
@@ -644,30 +847,34 @@ def main():
                     print("---------------------------")
                     opcionSub = input("Seleccione una opción: ")
                     if opcionSub in [str(i) for i in range(0, opciones_sub + 1)]:
-                        break
+                        valido_sub = True
                     else:
                         input("Opción inválida. Presione ENTER para volver a seleccionar.")
                 print()
 
                 if opcionSub == "0":
-                    break
-                elif opcionSub == "1":
-                    talles = alta_talle(talles)
-                elif opcionSub == "2":
-                    talles = modificar_talle(talles)
-                elif opcionSub == "3":
-                    talles = baja_logica_talle(talles)
-                elif opcionSub == "4":
-                    listar_talles_activos(talles)
+                    talles_running = False
+                else:
+                    if opcionSub == "1":
+                        talles = alta_talle(talles)
+                    elif opcionSub == "2":
+                        talles = modificar_talle(talles)
+                    elif opcionSub == "3":
+                        talles = baja_logica_talle(talles)
+                    elif opcionSub == "4":
+                        listar_talles_activos(talles)
 
-                pausar()
-                print("\n\n")
+                    pausar()
+                    print("\n\n")
 
         elif opcionMenuPrincipal == "4":
-            # Submenú Alquileres / Informes
-            while True:
-                while True:
-                    opciones_sub = 4
+            # Submenú Alquileres / Informes (controlado por flag)
+            alquileres_running = True
+            while alquileres_running:
+                opciones_sub = 4
+                opcionSub = None
+                valido_sub = False
+                while not valido_sub:
                     print()
                     print("---------------------------")
                     print("MENÚ > ALQUILERES / INFORMES")
@@ -680,27 +887,27 @@ def main():
                     print("---------------------------")
                     opcionSub = input("Seleccione una opción: ")
                     if opcionSub in [str(i) for i in range(0, opciones_sub + 1)]:
-                        break
+                        valido_sub = True
                     else:
                         input("Opción inválida. Presione ENTER para volver a seleccionar.")
                 print()
 
                 if opcionSub == "0":
-                    break
-                elif opcionSub == "1":
-                    alquileres = registrar_alquiler(alquileres, clientes, accesorios)
-                elif opcionSub == "2":
-                    listar_alquileres_mes_actual(alquileres, clientes, accesorios)
-                elif opcionSub == "3":
-                    # llamadas a funciones plantilla para completar
-                    informe_resumen_anual_cantidades(alquileres, accesorios)
-                    informe_resumen_anual_pesos(alquileres, accesorios)
-                elif opcionSub == "4":
-                    informe_libre_eleccion(alquileres, clientes, accesorios)
-                    informe_stock_resumen(accesorios)
+                    alquileres_running = False
+                else:
+                    if opcionSub == "1":
+                        alquileres = registrar_alquiler(alquileres, clientes, accesorios)
+                    elif opcionSub == "2":
+                        listar_alquileres_mes_actual(alquileres, clientes, accesorios)
+                    elif opcionSub == "3":
+                        informe_resumen_anual_cantidades(alquileres, clientes, accesorios)
+                        informe_resumen_anual_pesos(alquileres, accesorios)
+                    elif opcionSub == "4":
+                        informe_libre_eleccion(alquileres, clientes, accesorios)
+                        informe_stock_resumen(accesorios)
 
-                pausar()
-                print("\n\n")
+                    pausar()
+                    print("\n\n")
 
 
 if __name__ == "__main__":
