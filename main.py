@@ -732,7 +732,7 @@ def main():
             print("MENÚ PRINCIPAL")
             print("---------------------------")
             print("[1] Gestión de clientes")
-            print("[2] Gestión de accesorios")
+            print("[2] Gestión de productos")
             print("[3] Gestión de talles")
             print("[4] Gestión de alquileres / Informes")
             print("[0] Salir del programa")
