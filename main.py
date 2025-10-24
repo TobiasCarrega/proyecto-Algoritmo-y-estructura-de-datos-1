@@ -79,6 +79,10 @@ def alta_cliente(clientes: dict) -> dict:
             return clientes
     
     email = input("Email (opcional): ").strip()
+    if email != "":
+        if "@" not in email or "." not in email.split("@")[-1]:
+            print("Error: el mail ingresado no es valido ")
+            return clientes
     
     # multivalor: telefonos (ingresar separados por coma) -> dict
     telefonos_raw = input("Teléfonos (separe por coma si hay más de uno): ").strip()
