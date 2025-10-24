@@ -56,21 +56,38 @@ def pausar():
 # ---------------------------
 def alta_cliente(clientes: dict):
     """
-    Alta lógico de cliente. Telefonos ahora como dict {telefono: True, ...}
+    Alta lógico de cliente. Código asignado automáticamente (C###).
+    Telefonos se almacenan como dict {telefono: True, ...}
+    Se obtiene el número del último cliente por slicing sobre la última clave.
     """
     print(">>> ALTA CLIENTE")
-    codigo = input("Código cliente (ej: C011): ").strip().upper()
-    if codigo == "" or codigo in clientes:
-        print("Código inválido o ya existe.")
+
+    # determinar próximo código a partir del último elemento del dict (preserva orden en Python 3.7+)
+    if len(clientes) == 0:
+        next_n = 1
+    else:
+        ultima_clave = list(clientes.keys())[-1]      # p.ej. "C010"
+        numero_str = ultima_clave[1:]                 # slicing para capturar la parte numérica
+        if numero_str.isdigit():
+            next_n = int(numero_str) + 1
+        else:
+            # si el sufijo no es numérico, comenzar en 1
+            next_n = 1
+
+    codigo = f"C{next_n:03d}"
+    print(f"Código asignado: {codigo}")
+
+    nombre = input("Nombre y Apellido: ").strip()
+    if nombre == "":
+        print("Nombre inválido.")
         return clientes
 
     edad_str = input("Edad: ").strip()
     if not edad_str.isdigit() or int(edad_str) < 18:
         print("No se permiten clientes menores a 18 años.")
         return clientes
-
     edad = int(edad_str)
-    # multivalor: telefonos (ingresar separados por coma) 
+
     telefonos_raw = input("Teléfonos (separe por coma si hay más de uno): ").strip()
     telefonos = {t.strip(): True for t in telefonos_raw.split(",") if t.strip() != ""}
 
@@ -79,7 +96,7 @@ def alta_cliente(clientes: dict):
         "Edad": edad,
         "DNI": input("DNI (opcional): ").strip(),
         "Email": input("Email (opcional): ").strip(),
-        "Telefonos": telefonos,            # multivalor como dict
+        "Telefonos": telefonos,
         "Activo": True
     }
     print(f"Cliente {codigo} dado de alta.")
