@@ -2,7 +2,7 @@
 -----------------------------------------------------------------------------------------------
 Título: Entrega1 - Sistema de Alquiler de Accesorios para Esquí (versión inicial)
 Fecha: 2025.10.15
-Autor: Equipo - Tobias Carrega (plantilla inicial)
+Autor: Equipo 8  (plantilla inicial)
 Descripción:
     Estructura inicial del programa: 3 entidades maestras (clientes, accesorios, talles),
     una entidad de transacciones (alquileres) y menú multinivel con funciones separadas.
