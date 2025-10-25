@@ -1,1 +1,11 @@
+T01,S,36|38,True
+T02,M,40|42,True
+T03,L,44|46,True
+T04,XL,48|50,True
+T05,Niño XS,28|30,True
+T06,Niño S,32|34,True
+T07,Unisex único,,True
+T08,Extra L,52,True
+T09,Junior,30|32,True
+T10,Bebe,24,True
 
