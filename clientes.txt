@@ -1,3 +1,3 @@
-C001,Juan Perez,30,12345678,jperez@mail.com,1122334455|2233445566,True
-C002,Ana Gomez,25,87654321,agomez@mail.com,9988776655,True
+{ "C001": {"Nombre": "Juan Pérez", "Edad": 30, "DNI": "12345678", "Email": "juan@mail.com", "Telefonos": {"1111-1111": true}, "Activo": true},
+    "C002": {"Nombre": "Ana Gómez", "Edad": 25, "DNI": "23456789", "Email": "ana@mail.com", "Telefonos": {"2222-2222": true}, "Activo": true} }
 
