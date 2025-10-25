@@ -1,8 +1,8 @@
 """
 -----------------------------------------------------------------------------------------------
 Título: Carga de datos de Alquileres
-Fecha: 2025-10-24
-Autor: Martina Ortega
+Fecha: 2025.10.15
+Autor:  Equipo 8 
 Descripción: Lee los datos del archivo alquileres.txt y los convierte en un diccionario
              anidado por año.
 -----------------------------------------------------------------------------------------------
