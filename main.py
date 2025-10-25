@@ -24,23 +24,23 @@ from alquileres import cargar_alquileres
 #----------------------------------------------------------------------------------------------
 # FUNCIONES
 #----------------------------------------------------------------------------------------------
-def alta_cliente(clientes):
-    codigo = f"C{len(clientes) + 1:03d}"
-    nombre = input("Nombre y Apellido: ")
-    edad = int(input("Edad: "))
-    dni = input("DNI: ")
-    email = input("Email: ")
-    telefono = input("Teléfono: ")
-    clientes[codigo] = {
-        "Nombre": nombre,
-        "Edad": edad,
-        "DNI": dni,
-        "Email": email,
-        "Telefonos": {telefono: True},
-        "Activo": True
-    }
-    print(f"Cliente {codigo} agregado correctamente.")
-    return clientes
+# def alta_cliente(clientes):
+#     codigo = f"C{len(clientes) + 1:03d}"
+#     nombre = input("Nombre y Apellido: ")
+#     edad = int(input("Edad: "))
+#     dni = input("DNI: ")
+#     email = input("Email: ")
+#     telefono = input("Teléfono: ")
+#     clientes[codigo] = {
+#         "Nombre": nombre,
+#         "Edad": edad,
+#         "DNI": dni,
+#         "Email": email,
+#         "Telefonos": {telefono: True},
+#         "Activo": True
+#     }
+#     print(f"Cliente {codigo} agregado correctamente.")
+#     return clientes
 # ---------------------------
 # Utilidades
 # ---------------------------
