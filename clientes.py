@@ -1,21 +1,20 @@
 """
 -----------------------------------------------------------------------------------------------
 Título: Gestión de Clientes
-Fecha: 24/10/2025
-Autor: Martina Ortega
+Fecha: 2025.10.15
+Autor:  Equipo 8 
 
 Descripción:
 Funciones para leer y guardar clientes desde/hacia un archivo .txt
 
 Pendientes:
-- Validaciones más complejas (emails, teléfonos)
+Validaciones más complejas (emails, teléfonos)
 -----------------------------------------------------------------------------------------------
 """
 
 #----------------------------------------------------------------------------------------------
 # MÓDULOS
 #----------------------------------------------------------------------------------------------
-# Ninguno aparte de built-ins
 import os
 
 #----------------------------------------------------------------------------------------------
