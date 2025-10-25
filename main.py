@@ -16,10 +16,11 @@ Pendientes:
 # MÓDULOS
 #----------------------------------------------------------------------------------------------
 import time  # permitido en el enunciado para obtener fecha/hora
-from clientes import leer_datos as leer_clientes, guardar_datos as guardar_clientes
-from accesorios import leer_datos as leer_accesorios, guardar_datos as guardar_accesorios
-from talles import leer_datos as leer_talles, guardar_datos as guardar_talles
-from alquileres import leer_datos as leer_alquileres, guardar_datos as guardar_alquileres
+from clientes import cargar_clientes
+from accesorios import cargar_accesorios
+from productos import cargar_productos
+from talles import cargar_talles
+from alquileres import cargar_alquileres
 #----------------------------------------------------------------------------------------------
 # FUNCIONES
 #----------------------------------------------------------------------------------------------
@@ -527,29 +528,31 @@ def informe_stock_resumen(accesorios: dict):
 #----------------------------------------------------------------------------------------------
 
 def main():
-    # ✅ 1. Leer datos desde archivos TXT
-    clientes = leer_clientes("clientes.txt")
-    accesorios = leer_accesorios("accesorios.txt")
-    talles = leer_talles("talles.txt")
-    alquileres = leer_alquileres("alquileres.txt")
+    #Cargar los datos desde los archivos .txt
+    clientes = cargar_clientes("clientes.txt")
+    accesorios = cargar_accesorios("accesorios.txt")
+    productos = cargar_productos("productos.txt")
+    talles = cargar_talles("talles.txt")
+    alquileres = cargar_alquileres("alquileres.txt")
 
     print(">>> Sistema de alquiler de esquí iniciado correctamente.\n")
     print(f"Clientes cargados: {len(clientes)}")
     print(f"Accesorios cargados: {len(accesorios)}")
+    print(f"Productos cargados: {len(productos)}")
     print(f"Talles cargados: {len(talles)}")
     print(f"Alquileres cargados: {len(alquileres)}\n")
 
-    # 🔧 2. Acá después iría tu menú o funciones (ejemplo: alta_cliente, registrar_alquiler, etc.)
     print("Datos cargados correctamente. (Próximo paso: menú de opciones)")
 
-    # 💾 3. Guardar nuevamente al finalizar
+    #Guarda los datos actualizados al salir del sistema 
     guardar_clientes("clientes.txt", clientes)
     guardar_accesorios("accesorios.txt", accesorios)
+    guardar_productos("productos.txt", productos)
     guardar_talles("talles.txt", talles)
     guardar_alquileres("alquileres.txt", alquileres)
 
     print("\nCambios guardados correctamente en los archivos.")
-    
+
     #-------------------------------------------------
     # Bloque de menú 
     #-------------------------------------------------
