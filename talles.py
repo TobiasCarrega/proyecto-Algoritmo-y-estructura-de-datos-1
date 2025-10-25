@@ -1,8 +1,8 @@
 """
 -----------------------------------------------------------------------------------------------
 Título: Carga de datos de Talles
-Fecha: 2025-10-24
-Autor: Martina Ortega
+Fecha: 2025.10.15
+Autor:  Equipo 8 
 Descripción: Lee los datos del archivo talles.txt y los convierte en un diccionario.
 -----------------------------------------------------------------------------------------------
 """
