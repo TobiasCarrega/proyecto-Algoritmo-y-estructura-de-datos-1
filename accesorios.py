@@ -1,8 +1,8 @@
 """
 -----------------------------------------------------------------------------------------------
-Título: Gestión de Accesorios
-Fecha: 24/10/2025
-Autor: Martina Ortega
+Título: Gestión de Clientes
+Fecha: 2025.10.15
+Autor:  Equipo 8 
 
 Descripción:
 Funciones para leer y guardar accesorios desde/hacia un archivo .txt
