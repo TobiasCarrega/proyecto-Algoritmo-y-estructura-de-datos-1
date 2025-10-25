@@ -1,1 +1,3 @@
+C001,Juan Perez,30,12345678,jperez@mail.com,1122334455|2233445566,True
+C002,Ana Gomez,25,87654321,agomez@mail.com,9988776655,True
 
