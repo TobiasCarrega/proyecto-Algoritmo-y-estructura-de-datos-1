@@ -2,7 +2,7 @@
 -----------------------------------------------------------------------------------------------
 Título: Entrega1 - Sistema de Alquiler de Accesorios para Esquí (versión inicial)
 Fecha: 2025.10.15
-Autor: Equipo - Tobias Carrega
+Autor: Equipo 08 - Tobias Carrega
                 Lucia Zuccarello
                 López Mateo
                 Hernández Nicolás
