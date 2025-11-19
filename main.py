@@ -28,15 +28,21 @@ import time  # permitido en el enunciado para obtener fecha/hora
 # ---------------------------
 def fecha_hora_actual():
     """
-    Devuelve la fecha/hora actual como string con formato "AAAA.MM.DD hh:mm:ss".
+    Objetivo: Obtener la fecha y hora actual del sistema en formato estandarizado.
+    Entrada: Ninguna.
+    Salida: String con formato "AAAA.MM.DD HH:MM:SS" (ej: "2025.11.19 14:30:45").
     """
     return time.strftime("%Y.%m.%d %H:%M:%S")
 
 
 def validar_entero_en_rango(texto_input: str, min_val: int, max_val: int):
     """
-    Pide por teclado un entero entre min_val y max_val (inclusive).
-    Valida que la entrada sea numérica y esté en rango. Devuelve el entero aceptado.
+    Objetivo: Solicitar al usuario un entero dentro de un rango específico con validación repetida.
+    Entrada: 
+        - texto_input (str): Mensaje a mostrar en el input.
+        - min_val (int): Valor mínimo permitido (inclusive).
+        - max_val (int): Valor máximo permitido (inclusive).
+    Salida: Integer validado dentro del rango [min_val, max_val].
     """
     while True:
         valor = input(texto_input).strip()
@@ -48,7 +54,11 @@ def validar_entero_en_rango(texto_input: str, min_val: int, max_val: int):
 
 
 def pausar():
-    """Pausa estándar usada entre opciones."""
+    """
+    Objetivo: Pausar la ejecución y esperar confirmación del usuario (presionar ENTER).
+    Entrada: Ninguna.
+    Salida: Ninguna (solo pausa la ejecución).
+    """
     input("\nPresione ENTER para volver al menú.")
 
 
@@ -57,22 +67,21 @@ def pausar():
 # ---------------------------
 def alta_cliente(clientes: dict):
     """
-    Alta lógico de cliente. Código asignado automáticamente (C###).
-    Telefonos se almacenan como dict {telefono: True, ...}
-    Se obtiene el número del último cliente por slicing sobre la última clave.
+    Objetivo: Registrar un nuevo cliente con código asignado automáticamente.
+    Entrada: 
+        - clientes (dict): Diccionario con los clientes existentes.
+    Salida: Diccionario actualizado con el nuevo cliente agregado (código, nombre, edad, DNI, email, teléfonos).
     """
     print(">>> ALTA CLIENTE")
 
-    # determinar próximo código a partir del último elemento del dict (preserva orden en Python 3.7+)
     if len(clientes) == 0:
         next_n = 1
     else:
-        ultima_clave = list(clientes.keys())[-1]      # p.ej. "C010"
-        numero_str = ultima_clave[1:]                 # slicing para capturar la parte numérica
+        ultima_clave = list(clientes.keys())[-1]
+        numero_str = ultima_clave[1:]
         if numero_str.isdigit():
             next_n = int(numero_str) + 1
         else:
-            # si el sufijo no es numérico, comenzar en 1
             next_n = 1
 
     codigo = f"C{next_n:03d}"
@@ -106,8 +115,10 @@ def alta_cliente(clientes: dict):
 
 def modificar_cliente(clientes: dict):
     """
-    Modifica datos de un cliente existente (si está activo o inactivo).
-    Telefonos se almacenan como dict {telefono: True}
+    Objetivo: Modificar datos de un cliente existente (nombre, DNI, teléfonos).
+    Entrada: 
+        - clientes (dict): Diccionario con los clientes existentes.
+    Salida: Diccionario actualizado con los cambios realizados al cliente.
     """
     print(">>> MODIFICAR CLIENTE")
     listar_clientes_activos(clientes)
@@ -137,7 +148,10 @@ def modificar_cliente(clientes: dict):
 
 def baja_logica_cliente(clientes: dict):
     """
-    Marca el cliente como inactivo (baja lógica).
+    Objetivo: Marcar un cliente como inactivo sin eliminar sus datos (baja lógica).
+    Entrada: 
+        - clientes (dict): Diccionario con los clientes existentes.
+    Salida: Diccionario con el cliente marcado como inactivo (Activo = False).
     """
     print(">>> ELIMINAR (Baja lógica) CLIENTE")
     print(">>> ej:codigo de cliente: C011")
@@ -152,8 +166,10 @@ def baja_logica_cliente(clientes: dict):
 
 def listar_clientes_activos(clientes: dict):
     """
-    Muestra por pantalla los clientes con 'Activo' == True.
-    Telefonos ahora se obtienen de las claves del dict.
+    Objetivo: Mostrar en formato tabular todos los clientes con estado Activo = True.
+    Entrada: 
+        - clientes (dict): Diccionario con los clientes existentes.
+    Salida: Ninguna (solo visualización en pantalla).
     """
     print(">>> LISTADO DE CLIENTES ACTIVOS")
     encabezado = f"{'CÓDIGO':8} {'NOMBRE':30} {'EDAD':4} {'TELÉFONOS'}"
@@ -171,13 +187,15 @@ def listar_clientes_activos(clientes: dict):
 # ---------------------------
 # CRUD ACCESORIOS / PRODUCTOS
 # ---------------------------
-def alta_accesorio(accesorios: dict) :
+def alta_accesorio(accesorios: dict):
     """
-    Alta de accesorio. Talles ahora como dict {talle_codigo: True, ...}
+    Objetivo: Registrar un nuevo producto/accesorio con código definido por el usuario.
+    Entrada: 
+        - accesorios (dict): Diccionario con los accesorios existentes.
+    Salida: Diccionario actualizado con el nuevo accesorio (código, nombre, precio, stock, talles).
     """
     print(">>> ALTA ACCESORIO")
     listar_productos_en_stock(accesorios)
-
 
     codigo = input("Código producto (ej: P011): ").strip()
     if codigo == "" or codigo in accesorios:
@@ -204,16 +222,19 @@ def alta_accesorio(accesorios: dict) :
         "PrecioDiario": precio,
         "Stock": stock,
         "PerdidosRotura": 0,
-        "Talles": talles,   # multivalor como dict
+        "Talles": talles,
         "Activo": True
     }
     print(f"Accesorio {codigo} cargado.")
     return accesorios
 
 
-def modificar_accesorio(accesorios: dict) :
+def modificar_accesorio(accesorios: dict):
     """
-    Modifica un accesorio existente. Talles como dict.
+    Objetivo: Modificar datos de un producto existente (nombre, precio, talles).
+    Entrada: 
+        - accesorios (dict): Diccionario con los accesorios existentes.
+    Salida: Diccionario actualizado con los cambios realizados al accesorio.
     """
     print(">>> MODIFICAR ACCESORIO")
     listar_productos_en_stock(accesorios)
@@ -241,9 +262,12 @@ def modificar_accesorio(accesorios: dict) :
     return accesorios
 
 
-def baja_logica_accesorio(accesorios: dict) :
+def baja_logica_accesorio(accesorios: dict):
     """
-    Marca un accesorio como inactivo (baja lógica).
+    Objetivo: Marcar un producto como inactivo sin eliminar sus datos (baja lógica).
+    Entrada: 
+        - accesorios (dict): Diccionario con los accesorios existentes.
+    Salida: Diccionario con el accesorio marcado como inactivo (Activo = False).
     """
     print(">>> ELIMINAR (Baja lógica) ACCESORIO")
     codigo = input("Código producto a dar de baja: ").strip()
@@ -257,7 +281,10 @@ def baja_logica_accesorio(accesorios: dict) :
 
 def listar_productos_en_stock(accesorios: dict):
     """
-    Muestra productos activos con stock > 0.
+    Objetivo: Mostrar en formato tabular los productos activos con stock disponible (> 0).
+    Entrada: 
+        - accesorios (dict): Diccionario con los accesorios existentes.
+    Salida: Ninguna (solo visualización en pantalla).
     """
     print(">>> LISTADO DE PRODUCTOS EN STOCK")
     encabezado = f"{'CÓDIGO':8} {'NOMBRE':30} {'STOCK':6} {'PRECIO/DIARIO':12}"
@@ -272,7 +299,10 @@ def listar_productos_en_stock(accesorios: dict):
 
 def listar_perdidos_rotos(accesorios: dict):
     """
-    Lista ítems perdidos/rotos (campo PerdidosRotura > 0).
+    Objetivo: Mostrar productos con registro de pérdida o rotura para auditoría.
+    Entrada: 
+        - accesorios (dict): Diccionario con los accesorios existentes.
+    Salida: Ninguna (solo visualización en pantalla).
     """
     print(">>> LISTADO DE ÍTEMS PERDIDOS / ROTOS")
     encabezado = f"{'CÓDIGO':8} {'NOMBRE':30} {'PERDIDOS/ROTOS':15}"
@@ -285,7 +315,10 @@ def listar_perdidos_rotos(accesorios: dict):
 
 def listar_talles_producto(accesorios: dict):
     """
-    Muestra talles disponibles por producto (ahora claves del dict).
+    Objetivo: Mostrar la relación entre productos y talles disponibles para cada uno.
+    Entrada: 
+        - accesorios (dict): Diccionario con los accesorios existentes.
+    Salida: Ninguna (solo visualización en pantalla).
     """
     print(">>> LISTADO DE TALLES POR PRODUCTO")
     for codigo, p in accesorios.items():
@@ -293,12 +326,12 @@ def listar_talles_producto(accesorios: dict):
             print(f"{codigo} - {p.get('Nombre')}: {', '.join(p.get('Talles', {}).keys())}")
 
 
-# ---------------------------
-# CRUD TALLES (Entidad maestra 3)
-# ---------------------------
-def alta_talle(talles: dict) :
+def alta_talle(talles: dict):
     """
-    Alta de talle. Equivalencias ahora dict {equiv: True}
+    Objetivo: Registrar un nuevo talle con código definido por el usuario.
+    Entrada: 
+        - talles (dict): Diccionario con los talles existentes.
+    Salida: Diccionario actualizado con el nuevo talle (código, nombre, equivalencias).
     """
     print(">>> ALTA TALLE")
     codigo = input("Código talle (ej: T011): ").strip()
@@ -312,16 +345,20 @@ def alta_talle(talles: dict) :
 
     talles[codigo] = {
         "Nombre": nombre,
-        "Equivalencias": equivalencias,  # multivalor como dict
+        "Equivalencias": equivalencias,
         "Activo": True
     }
     print(f"Talle {codigo} dado de alta.")
     return talles
 
 
-def modificar_talle(talles: dict, accesorios: dict) : 
+def modificar_talle(talles: dict, accesorios: dict):
     """
-    Modifica un talle. Equivalencias como dict.
+    Objetivo: Modificar datos de un talle existente (nombre y equivalencias).
+    Entrada: 
+        - talles (dict): Diccionario con los talles existentes.
+        - accesorios (dict): Diccionario con accesorios (para mostrar contexto).
+    Salida: Diccionario actualizado con los cambios realizados al talle.
     """
     print(">>> MODIFICAR TALLE")
     listar_productos_en_stock(accesorios)
@@ -345,9 +382,12 @@ def modificar_talle(talles: dict, accesorios: dict) :
     return talles
 
 
-def baja_logica_talle(talles: dict) :
+def baja_logica_talle(talles: dict):
     """
-    Baja lógica de un talle.
+    Objetivo: Marcar un talle como inactivo sin eliminar sus datos (baja lógica).
+    Entrada: 
+        - talles (dict): Diccionario con los talles existentes.
+    Salida: Diccionario con el talle marcado como inactivo (Activo = False).
     """
     print(">>> ELIMINAR (Baja lógica) TALLE")
     codigo = input("Código talle a dar de baja: ").strip()
@@ -361,7 +401,10 @@ def baja_logica_talle(talles: dict) :
 
 def listar_talles_activos(talles: dict):
     """
-    Lista talles activos.
+    Objetivo: Mostrar todos los talles con estado Activo = True con sus equivalencias.
+    Entrada: 
+        - talles (dict): Diccionario con los talles existentes.
+    Salida: Ninguna (solo visualización en pantalla).
     """
     print(">>> LISTADO DE TALLES ACTIVOS")
     for codigo, t in talles.items():
@@ -369,13 +412,17 @@ def listar_talles_activos(talles: dict):
             print(f"{codigo}: {t.get('Nombre')} - Equiv: {', '.join(t.get('Equivalencias', {}).keys())}")
 
 
-# ---------------------------
-# ENTIDAD TRANSACCIONES: ALQUILERES (2 diccionarios anidados)
-# ---------------------------
-def registrar_alquiler(alquileres: dict, clientes: dict, accesorios: dict) :
+def registrar_alquiler(alquileres: dict, clientes: dict, accesorios: dict):
+    """
+    Objetivo: Registrar una nueva transacción de alquiler validando cliente, producto y stock.
+    Entrada: 
+        - alquileres (dict): Diccionario de transacciones anidado por año.
+        - clientes (dict): Diccionario con clientes para validación.
+        - accesorios (dict): Diccionario con accesorios para validación y actualización de stock.
+    Salida: Diccionario actualizado con la nueva transacción registrada (ID, fecha, cliente, producto, cantidad, total).
+    """
     print(">>> REGISTRAR ALQUILER")
     anio = time.strftime("%Y")
-    # generar ID simple (se cuenta cantidad actual + 1)
     if anio not in alquileres:
         alquileres[anio] = {}
 
@@ -396,7 +443,6 @@ def registrar_alquiler(alquileres: dict, clientes: dict, accesorios: dict) :
         return alquileres
     cantidad = int(cantidad_raw)
 
-    # validar stock
     if accesorios[codigo_producto].get("Stock", 0) < cantidad:
         print("Stock insuficiente.")
         return alquileres
@@ -414,7 +460,6 @@ def registrar_alquiler(alquileres: dict, clientes: dict, accesorios: dict) :
         "Total": total
     }
 
-    # actualizar stock (resta) - acción realizada en la versión 1.0 (simple)
     accesorios[codigo_producto]["Stock"] -= cantidad
 
     print(f"Alquiler registrado: {next_id} - {fh} - Cliente {codigo_cliente} - Producto {codigo_producto} - Cant {cantidad}")
@@ -423,8 +468,12 @@ def registrar_alquiler(alquileres: dict, clientes: dict, accesorios: dict) :
 
 def listar_alquileres_mes_actual(alquileres: dict, clientes: dict, accesorios: dict):
     """
-    Informe 1: Listado de operaciones del mes en curso (formato tabular).
-    Se recorre el año actual en alquileres y filtra por mes actual.
+    Objetivo: Mostrar en formato tabular todos los alquileres del mes actual.
+    Entrada: 
+        - alquileres (dict): Diccionario de transacciones anidado por año.
+        - clientes (dict): Diccionario con clientes para resolver nombres.
+        - accesorios (dict): Diccionario con accesorios para resolver nombres.
+    Salida: Ninguna (solo visualización en pantalla).
     """
     print(">>> LISTADO DE ALQUILERES - MES ACTUAL")
     anio = time.strftime("%Y")
@@ -437,25 +486,31 @@ def listar_alquileres_mes_actual(alquileres: dict, clientes: dict, accesorios: d
         return
     for id_alq, datos in alquileres[anio].items():
         fecha = datos.get("FechaHora", "")
-        if fecha[5:7] == mes:  # formato "AAAA.MM.DD hh:mm:ss" -> posiciones 5:7 son mes
+        if len(fecha) >= 7 and fecha[5:7] == mes:
             cliente_nombre = clientes.get(datos.get("Cliente"), {}).get("Nombre", datos.get("Cliente"))
             producto_nombre = accesorios.get(datos.get("Producto"), {}).get("Nombre", datos.get("Producto"))
             print(f"{fecha:20} {cliente_nombre[:20]:20} {producto_nombre[:25]:25} {str(datos.get('Cantidad')):6} {str(datos.get('PrecioUnit')):10} {str(datos.get('Total')):12}")
 
 
 def informe_resumen_anual(alquileres: dict, clientes: dict, accesorios: dict):
+    """
+    Objetivo: Mostrar un resumen anual detallado de todas las transacciones con acumuladores.
+    Entrada: 
+        - alquileres (dict): Diccionario de transacciones anidado por año.
+        - clientes (dict): Diccionario con clientes para resolver nombres.
+        - accesorios (dict): Diccionario con accesorios para resolver nombres.
+    Salida: Ninguna (solo visualización en pantalla con detalles por año, cantidad de operaciones, unidades y recaudación).
+    """
     print(">>> LISTADO DE ALQUILERES - ANUAL")
-    encabezado = f"{'Año':4}{'ID_Alquiler':12}{'Fecha/Hora':20}{'Cliente':20}{'Producto':25}{'Cant.':6}{'Unit.':10}{'Total':12}"
+    encabezado = f"{'Año':4}{'ID_Alquiler':18}{'Fecha/Hora':20}{'Cliente':20}{'Producto':28}{'Cant.':10}{'Unit.':15}{'Total':12}"
     print(encabezado)
     print("-" * len(encabezado))
 
-    # recorrer todos los años
     for año, datos_anuales in alquileres.items():
         contador = 0
         recaudacion = 0
         unidades = 0
 
-        # recorrer los alquileres de ese año
         for id_alq, datos in datos_anuales.items():
             fecha = datos.get("FechaHora", "")
             cliente_nombre = clientes.get(datos.get("Cliente"), {}).get("Nombre", datos.get("Cliente"))
@@ -464,7 +519,6 @@ def informe_resumen_anual(alquileres: dict, clientes: dict, accesorios: dict):
             unitario = datos.get("PrecioUnit", 0)
             total = datos.get("Total", 0)
 
-            # acumuladores
             contador += 1
             recaudacion += total
             unidades += cantidad
@@ -472,7 +526,6 @@ def informe_resumen_anual(alquileres: dict, clientes: dict, accesorios: dict):
             # imprimir detalle
             print(f"{año:4} {id_alq:12} {fecha:20} {cliente_nombre[:20]:20} {producto_nombre[:25]:25} {cantidad:6} {unitario:10} {total:12}")
 
-        # resumen anual
         print("-" * len(encabezado))
         print(f">>> Total de alquileres en {año}: {contador}")
         print(f">>> Unidades alquiladas en {año}: {unidades}")
@@ -482,8 +535,12 @@ def informe_resumen_anual(alquileres: dict, clientes: dict, accesorios: dict):
 
 def informe_libre_eleccion(alquileres: dict, clientes: dict, accesorios: dict):
     """
-    Informe 4: Listado a libre elección del equipo. Se puede listar las transacciones
-    con el nombre del cliente y nombre del producto (ejemplo).
+    Objetivo: Mostrar listado detallado de todas las transacciones con nombres resueltos.
+    Entrada: 
+        - alquileres (dict): Diccionario de transacciones anidado por año.
+        - clientes (dict): Diccionario con clientes para resolver nombres.
+        - accesorios (dict): Diccionario con accesorios para resolver nombres.
+    Salida: Ninguna (solo visualización en pantalla con ID, fecha, cliente, producto, cantidad y total).
     """
     print(">>> INFORME LIBRE: LISTADO DETALLADO DE ALQUILERES")
     for anio, datos_anio in alquileres.items():
@@ -495,7 +552,10 @@ def informe_libre_eleccion(alquileres: dict, clientes: dict, accesorios: dict):
 
 def informe_stock_resumen(accesorios: dict):
     """
-    Informe 4.2: Resumen de productos: stock, alquilados (implícito), perdidos/rotos.
+    Objetivo: Mostrar un resumen del estado actual del inventario (stock y pérdidas/roturas).
+    Entrada: 
+        - accesorios (dict): Diccionario con los accesorios existentes.
+    Salida: Ninguna (solo visualización en pantalla con código, nombre, stock y cantidad de pérdidas/roturas).
     """
     print(">>> INFORME: RESUMEN DE PRODUCTOS (stock / perdidos/rotos)")
     encabezado = f"{'CÓDIGO':8} {'NOMBRE':30} {'STOCK':6} {'PERDIDOS/ROTOS':15}"
