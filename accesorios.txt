@@ -1,3 +1,0 @@
-{ "A001": {"Nombre": "Casco", "Precio": 5000, "Stock": 10},
-    "A002": {"Nombre": "Botas", "Precio": 8000, "Stock": 5} }
-
