@@ -18,7 +18,6 @@ Descripción:
 #----------------------------------------------------------------------------------------------
 import time  # permitido en el enunciado para obtener fecha/hora
 import json  # necesario para pasar los datos en formato JSON
-import os
 
 #----------------------------------------------------------------------------------------------
 # FUNCIONES
@@ -98,7 +97,11 @@ def generar_archivos_iniciales():
     Genera clientes.json, accesorios.json y talles.json
     únicamente si no existen.
     """
-    if not os.path.exists("clientes.json"):
+    try:
+        with open("clientes.json", "r") as f:
+            pass #Si el archivo se abre correctamente no hace nada
+    except FileNotFoundError:
+        # Si no existe, crea el archivo y guarda los datos iniciales
         # Datos de clientes
         clientes_inicial = {
             # clave: código string -> valor: dict atributos (incluye 'Telefonos' dict)
@@ -114,7 +117,10 @@ def generar_archivos_iniciales():
         "C010": {"Nombre": "Ana Molina", "Edad": 24, "DNI": "30200111", "Email": "ana@example.com", "Telefonos": {"3411414141": True}, "Activo": True}
     }
         guardar_json(clientes_inicial, "clientes.json")
-    if not os.path.exists("accesorios.json"):
+    try:
+        with open("accesorios.json", "r") as f:
+            pass
+    except FileNotFoundError:
         # Datos accesorios
         accesorios_inicial = {
             # atributo multivalor: 'Talles'  de códigos de talles
@@ -130,7 +136,12 @@ def generar_archivos_iniciales():
         "P010": {"Nombre": "Mochila porta esquí", "PrecioDiario": 1100, "Stock": 7, "PerdidosRotura": 0, "Talles": {}, "Activo": True}
     }
         guardar_json(accesorios_inicial, "accesorios.json")
-    if not os.path.exists("talles.json"):
+        
+    try:
+        # Intentar abrir 'talles.json', si no existe, lanzar una excepción
+        with open("talles.json", "r") as f:
+            pass  # Si el archivo se abre correctamente, no hace nada
+    except FileNotFoundError:
         # Datos talles
         talles_inicial = {
             # atributo multivalor: 'Equivalencias' 
