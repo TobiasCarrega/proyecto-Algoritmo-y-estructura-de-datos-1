@@ -572,6 +572,7 @@ def main():
     #-------------------------------------------------
     # Inicialización de variables (3 diccionarios de diccionarios - entidades maestras)
     #-------------------------------------------------
+    """
     clientes = {
         # clave: código string -> valor: dict atributos (incluye 'Telefonos' dict)
         "C001": {"Nombre": "Gonzalo Perez", "Edad": 28, "DNI": "30111222", "Email": "gonzalo@example.com", "Telefonos": {"3411234567": True}, "Activo": True},
@@ -781,6 +782,7 @@ def main():
                 }
     }
     }
+    """
 
     #-------------------------------------------------
     # Bloque de menú 

@@ -1,0 +1,82 @@
+{
+  "P001": {
+    "Nombre": "Esquí Adulto",
+    "PrecioDiario": 5000,
+    "Stock": 10,
+    "PerdidosRotura": 0,
+    "Talles": { "T01": true, "T02": true },
+    "Activo": true
+  },
+  "P002": {
+    "Nombre": "Botas Adulto",
+    "PrecioDiario": 3000,
+    "Stock": 15,
+    "PerdidosRotura": 1,
+    "Talles": { "T02": true, "T03": true },
+    "Activo": true
+  },
+  "P003": {
+    "Nombre": "Bastones",
+    "PrecioDiario": 800,
+    "Stock": 20,
+    "PerdidosRotura": 0,
+    "Talles": {},
+    "Activo": true
+  },
+  "P004": {
+    "Nombre": "Casco",
+    "PrecioDiario": 700,
+    "Stock": 25,
+    "PerdidosRotura": 0,
+    "Talles": { "T01": true, "T03": true },
+    "Activo": true
+  },
+  "P005": {
+    "Nombre": "Pantalón térmico",
+    "PrecioDiario": 900,
+    "Stock": 12,
+    "PerdidosRotura": 0,
+    "Talles": { "T02": true, "T03": true, "T04": true },
+    "Activo": true
+  },
+  "P006": {
+    "Nombre": "Campera térmica",
+    "PrecioDiario": 1500,
+    "Stock": 8,
+    "PerdidosRotura": 0,
+    "Talles": { "T03": true },
+    "Activo": true
+  },
+  "P007": {
+    "Nombre": "Guantes",
+    "PrecioDiario": 300,
+    "Stock": 30,
+    "PerdidosRotura": 2,
+    "Talles": { "T01": true, "T02": true },
+    "Activo": true
+  },
+  "P008": {
+    "Nombre": "Gafas",
+    "PrecioDiario": 250,
+    "Stock": 40,
+    "PerdidosRotura": 0,
+    "Talles": {},
+    "Activo": true
+  },
+  "P009": {
+    "Nombre": "Protector espalda",
+    "PrecioDiario": 1200,
+    "Stock": 5,
+    "PerdidosRotura": 0,
+    "Talles": { "T02": true },
+    "Activo": true
+  },
+  "P010": {
+    "Nombre": "Mochila porta esquí",
+    "PrecioDiario": 1100,
+    "Stock": 7,
+    "PerdidosRotura": 0,
+    "Talles": {},
+    "Activo": true
+  }
+}
