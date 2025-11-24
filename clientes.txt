@@ -1,3 +1,0 @@
-{ "C001": {"Nombre": "Juan Pérez", "Edad": 30, "DNI": "12345678", "Email": "juan@mail.com", "Telefonos": {"1111-1111": true}, "Activo": true},
-    "C002": {"Nombre": "Ana Gómez", "Edad": 25, "DNI": "23456789", "Email": "ana@mail.com", "Telefonos": {"2222-2222": true}, "Activo": true} }
-
