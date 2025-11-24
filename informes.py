@@ -1,7 +1,7 @@
 #----------------------------------------------------------------------------------------------
 # MÓDULOS
 #----------------------------------------------------------------------------------------------
-import time   # Necesario para obtener mes y año actuales
+import time
 
 
 #----------------------------------------------------------------------------------------------
@@ -9,147 +9,100 @@ import time   # Necesario para obtener mes y año actuales
 #----------------------------------------------------------------------------------------------
 
 # ---------------------------
-# Informes de Alquileres
+# INFORMES MENSUALES
 # ---------------------------
 
-def listar_alquileres_mes_actual(alquileres: dict, clientes: dict, accesorios: dict):
+def listar_alquileres_mes_actual(alquileres: dict):
     """
-    Informe 1:
-    Muestra todas las operaciones de alquiler realizadas en el mes actual.
-    Filtra por:
-        año actual -> clave del diccionario
-        mes actual -> tomado de la FechaHora ("AAAA.MM.DD hh:mm:ss")
+    Muestra todos los alquileres correspondientes al mes y año actual.
     """
-    print(">>> LISTADO DE ALQUILERES - MES ACTUAL")
-
+    print(">>> INFORME MENSUAL DE ALQUILERES (MES ACTUAL)")
     anio = time.strftime("%Y")
     mes_actual = time.strftime("%m")
 
-    encabezado = (
-        f"{'Fecha/Hora':20} {'Cliente':20} {'Producto':25} "
-        f"{'Cant':5} {'Unitario':10} {'Total':12}"
-    )
-    print(encabezado)
-    print("-" * len(encabezado))
-
-    # Si no existe el año
     if anio not in alquileres:
-        print("No hay operaciones registradas en el año actual.")
+        print("No hay alquileres cargados para este año.")
         return
 
-    # Recorre todas las operaciones del año
+    print(f"{'FECHA':20} {'CLIENTE':10} {'PRODUCTO':10} {'CANT':4} {'DIAS':4} {'TOTAL':8}")
+    print("-" * 70)
+
     for clave, datos in alquileres[anio].items():
-        fecha = datos.get("FechaHora", "")
+        fecha = datos["FechaHora"]
+        mes_alquiler = fecha[5:7]
 
-        # Extrae mes (posiciones 5:7 en formato AAAA.MM.DD)
-        if fecha[5:7] == mes_actual:
-            cliente = clientes.get(datos.get("Cliente"), {}).get("Nombre", "N/D")
-            producto = accesorios.get(datos.get("Producto"), {}).get("Nombre", "N/D")
-
-            print(f"{fecha:20} "
-                  f"{cliente[:20]:20} "
-                  f"{producto[:25]:25} "
-                  f"{str(datos.get('Cantidad')):5} "
-                  f"{str(datos.get('PrecioUnit')):10} "
-                  f"{str(datos.get('Total')):12}")
+        if mes_alquiler == mes_actual:
+            print(f"{fecha:20} {datos['Cliente']:10} {datos['Producto']:10} "
+                  f"{str(datos['Cantidad']):4} {str(datos['Dias']):4} {str(datos['Total']):8}")
 
 
-def informe_resumen_anual(alquileres: dict, clientes: dict, accesorios: dict):
+# ---------------------------
+# INFORMES DE STOCK
+# ---------------------------
+
+def informe_stock_total(accesorios: dict):
     """
-    Informe 2 (corregido):
-    Recorre TODOS los años disponibles y genera:
-        - cantidad de alquileres en el año
-        - unidades alquiladas
-        - recaudación total
-        - detalle de cada alquiler
-
-    Este informe fue corregido porque el profesor pidió
-    un verdadero "informe anual" y no solo un listado.
+    Informa el stock disponible de cada accesorio.
     """
-    print(">>> RESUMEN ANUAL DE ALQUILERES")
+    print(">>> INFORME DE STOCK TOTAL")
+    print(f"{'CÓDIGO':8} {'NOMBRE':30} {'STOCK':6} {'ROTOS/LOST':10}")
+    print("-" * 60)
 
-    encabezado = (
-        f"{'Año':5} {'Clave':20} {'Fecha/Hora':20} {'Cliente':20} "
-        f"{'Producto':25} {'Cant':5} {'Unit':10} {'Total':10}"
-    )
-    print(encabezado)
-    print("-" * len(encabezado))
-
-    # Recorre TODOS los años cargados en el sistema
-    for anio, datos_anuales in alquileres.items():
-        total_operaciones = 0
-        total_unidades = 0
-        total_recaudado = 0
-
-        for clave, datos in datos_anuales.items():
-            fecha = datos.get("FechaHora", "")
-            cliente = clientes.get(datos.get("Cliente"), {}).get("Nombre", "N/D")
-            producto = accesorios.get(datos.get("Producto"), {}).get("Nombre", "N/D")
-            cantidad = datos.get("Cantidad", 0)
-            unitario = datos.get("PrecioUnit", 0)
-            total = datos.get("Total", 0)
-
-            # Acumular
-            total_operaciones += 1
-            total_unidades += cantidad
-            total_recaudado += total
-
-            # Mostrar detalle
-            print(f"{anio:5} "
-                  f"{clave:20} "
-                  f"{fecha:20} "
-                  f"{cliente[:20]:20} "
-                  f"{producto[:25]:25} "
-                  f"{str(cantidad):5} "
-                  f"{str(unitario):10} "
-                  f"{str(total):10}")
-
-        # Resumen final del año
-        print("-" * len(encabezado))
-        print(f"Total de operaciones en {anio}: {total_operaciones}")
-        print(f"Unidades alquiladas en {anio}: {total_unidades}")
-        print(f"Recaudación total en {anio}: ${total_recaudado}")
-        print("=" * len(encabezado))
+    for codigo, datos in accesorios.items():
+        print(f"{codigo:8} {datos['Nombre'][:30]:30} "
+              f"{str(datos['Stock']):6} {str(datos['PerdidosRotura']):10}")
 
 
-def informe_libre_eleccion(alquileres: dict, clientes: dict, accesorios: dict):
+# ==============================================================================================
+# NUEVO: **INFORMES ANUALES (PEDIDOS POR EL PROFESOR)**
+# ==============================================================================================
+
+def informe_anual_por_cliente(alquileres: dict, clientes: dict, anio: str):
     """
-    Informe 3:
-    Listado libre elegido por el equipo.
-    En este caso, muestra claves, fechas, nombres de cliente y producto.
+    Informe ANUAL: cantidad de alquileres realizados por cada cliente.
+
+    Parámetros:
+        alquileres: dict con estructura {anio: {clave: datos}}
+        clientes: dict con datos del cliente
+        anio: año a consultar
     """
-    print(">>> INFORME LIBRE: DETALLE DE OPERACIONES")
+    print(f">>> INFORME ANUAL POR CLIENTE ({anio})")
 
-    for anio, datos_anuales in alquileres.items():
-        print(f"\n--- Año {anio} ---")
+    if anio not in alquileres:
+        print("No hay alquileres cargados en ese año.")
+        return
 
-        for clave, datos in datos_anuales.items():
-            cliente = clientes.get(datos.get("Cliente"), {}).get("Nombre", "N/D")
-            producto = accesorios.get(datos.get("Producto"), {}).get("Nombre", "N/D")
+    contador = {}   # cliente -> cantidad de alquileres
 
-            print(f"{clave} | "
-                  f"{datos.get('FechaHora')} | "
-                  f"{cliente} | "
-                  f"{producto} | "
-                  f"Cantidad: {datos.get('Cantidad')} | "
-                  f"Total: ${datos.get('Total')}")
+    for clave, datos in alquileres[anio].items():
+        cli = datos["Cliente"]
+        contador[cli] = contador.get(cli, 0) + 1
+
+    print(f"{'CLIENTE':10} {'NOMBRE':25} {'ALQUILERES':10}")
+    print("-" * 50)
+
+    for cli, cant in contador.items():
+        nombre = clientes.get(cli, {}).get("Nombre", "Desconocido")
+        print(f"{cli:10} {nombre[:25]:25} {cant:10}")
 
 
-def informe_stock_resumen(accesorios: dict):
+def informe_recaudacion_anual(alquileres: dict, anio: str):
     """
-    Informe 4:
-    Muestra el estado general de stock y pérdidas/roturas de cada accesorio.
+    Informe ANUAL: recaudación total del año.
+
+    Parámetros:
+        alquileres: dict general de alquileres
+        anio: año a consultar
     """
-    print(">>> INFORME: RESUMEN DE STOCK DE ACCESORIOS")
+    print(f">>> INFORME ANUAL DE RECAUDACIÓN ({anio})")
 
-    encabezado = f"{'CÓDIGO':8} {'NOMBRE':30} {'STOCK':6} {'PERDIDOS/ROTOS':15}"
-    print(encabezado)
-    print("-" * len(encabezado))
+    if anio not in alquileres:
+        print("No hay datos de ese año.")
+        return
 
-    for codigo, p in accesorios.items():
-        print(f"{codigo:8} "
-              f"{p.get('Nombre','')[:30]:30} "
-              f"{str(p.get('Stock')):6} "
-              f"{str(p.get('PerdidosRotura')):15}")
+    total = 0
 
-    print("-" * len(encabezado))
+    for clave, datos in alquileres[anio].items():
+        total += datos.get("Total", 0)
+
+    print(f"Recaudación total del año {anio}: ${total}")

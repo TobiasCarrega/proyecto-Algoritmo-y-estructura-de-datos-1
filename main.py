@@ -1,18 +1,36 @@
+"""
+-----------------------------------------------------------------------------------------------
+Título: Entrega1 - Sistema de Alquiler de Accesorios para Esquí (versión inicial)
+Fecha: 2025.11.24
+Autor: Equipo 08 - Tobias Carrega
+                Lucia Zuccarello
+                López Mateo
+                Hernández Nicolás
+                Ortega Torres Martina
+Descripción: main.py - Programa principal que integra todos los módulos del sistema de alquiler de accesorios para esquí."""
+
 #----------------------------------------------------------------------------------------------
 # MÓDULOS
 #----------------------------------------------------------------------------------------------
+
 import json
 
 # Importación de los módulos del sistema
-from clientes import alta_cliente, modificar_cliente, baja_logica_cliente, listar_clientes_activos
-from accesorios import alta_accesorio, modificar_accesorio, baja_logica_accesorio, listar_accesorios_activos
-from talles import alta_talle, modificar_talle, baja_logica_talle, listar_talles_activos
+from clientes import (
+    alta_cliente, modificar_cliente, baja_logica_cliente, listar_clientes_activos
+)
+from accesorios import (
+    alta_accesorio, modificar_accesorio, baja_logica_accesorio, listar_productos_en_stock
+)
+from talles import (
+    alta_talle, modificar_talle, baja_logica_talle, listar_talles_activos
+)
 from alquileres import registrar_alquiler
 from informes import (
     listar_alquileres_mes_actual,
-    informe_resumen_anual,
-    informe_libre_eleccion,
-    informe_stock_resumen
+    informe_anual_por_cliente,
+    informe_recaudacion_anual,
+    informe_stock_total
 )
 
 
@@ -21,7 +39,7 @@ from informes import (
 #----------------------------------------------------------------------------------------------
 
 # ---------------------------
-# Archivo JSON - Utilidades
+# Utilidades JSON
 # ---------------------------
 
 def cargar_archivo(ruta: str):
@@ -107,7 +125,7 @@ def main():
                 print("1) Alta accesorio")
                 print("2) Modificar accesorio")
                 print("3) Baja lógica accesorio")
-                print("4) Listar accesorios activos")
+                print("4) Listar productos en stock")
                 print("5) Volver")
                 sub = input("Seleccione opción: ").strip()
 
@@ -118,7 +136,7 @@ def main():
                 elif sub == "3":
                     baja_logica_accesorio(accesorios)
                 elif sub == "4":
-                    listar_accesorios_activos(accesorios)
+                    listar_productos_en_stock(accesorios)
                 elif sub == "5":
                     break
                 else:
@@ -163,22 +181,29 @@ def main():
             while True:
                 print("\n--- INFORMES ---")
                 print("1) Alquileres del mes actual")
-                print("2) Resumen anual de alquileres")
-                print("3) Informe libre elección")
-                print("4) Resumen de stock")
+                print("2) Informe ANUAL por cliente")
+                print("3) Informe ANUAL de recaudación")
+                print("4) Resumen de stock total")
                 print("5) Volver")
                 sub = input("Seleccione opción: ").strip()
 
                 if sub == "1":
                     listar_alquileres_mes_actual(alquileres, clientes, accesorios)
+
                 elif sub == "2":
-                    informe_resumen_anual(alquileres, clientes, accesorios)
+                    anio = input("Ingrese año (AAAA): ").strip()
+                    informe_anual_por_cliente(alquileres, clientes, anio)
+
                 elif sub == "3":
-                    informe_libre_eleccion(alquileres, clientes, accesorios)
+                    anio = input("Ingrese año (AAAA): ").strip()
+                    informe_recaudacion_anual(alquileres, anio)
+
                 elif sub == "4":
-                    informe_stock_resumen(accesorios)
+                    informe_stock_total(accesorios)
+
                 elif sub == "5":
                     break
+
                 else:
                     print("Opción inválida.")
 

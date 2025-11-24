@@ -1,7 +1,7 @@
 #----------------------------------------------------------------------------------------------
 # MÓDULOS
 #----------------------------------------------------------------------------------------------
-import time   # Se usa para generar fecha/hora y calcular diferencia de días
+import time   
 
 
 #----------------------------------------------------------------------------------------------
@@ -14,8 +14,9 @@ import time   # Se usa para generar fecha/hora y calcular diferencia de días
 
 def fecha_hora_actual():
     """
-    Devuelve la fecha y hora actual con formato requerido por la cátedra:
-    "AAAA.MM.DD hh:mm:ss"
+    Devuelve la fecha y hora actual en formato:
+        "AAAA.MM.DD hh:mm:ss"
+    Este formato fue exigido por la cátedra para usarlo como clave del alquiler.
     """
     return time.strftime("%Y.%m.%d %H:%M:%S")
 
@@ -27,19 +28,27 @@ def fecha_hora_actual():
 def registrar_alquiler(alquileres: dict, clientes: dict, accesorios: dict):
     """
     Registra una operación de alquiler.
-    Pasos:
-        - Verifica cliente activo
-        - Verifica accesorio activo y con stock
-        - Solicita cantidad
-        - Genera clave del alquiler usando fecha y hora
-        - Pide fecha de devolución
-        - Calcula días (mínimo 1)
-        - Calcula monto total según días
-        - Descarga stock del accesorio
-        - Guarda la operación en el diccionario 'alquileres'
+
+    Pasos realizados:
+        1) Verifica cliente activo
+        2) Verifica producto activo y con stock suficiente
+        3) Solicita cantidad
+        4) Genera clave del alquiler = fecha/hora actual (AAAA.MM.DD hh:mm:ss)
+           - Si la clave se repite, se agrega sufijo "-N"
+        5) Solicita fecha de devolución
+        6) Valida el formato de fecha
+        7) Calcula la cantidad de días (mínimo 1)
+        8) Calcula monto total = precio_unit * cantidad * días
+        9) Actualiza el stock del producto
+       10) Guarda la operación en el diccionario "alquileres"
+
+    Retorna:
+        El diccionario actualizado de alquileres.
     """
+
     print(">>> REGISTRAR ALQUILER")
     
+    # Determinar año actual como clave de nivel 1
     anio = time.strftime("%Y")
     if anio not in alquileres:
         alquileres[anio] = {}
@@ -63,18 +72,18 @@ def registrar_alquiler(alquileres: dict, clientes: dict, accesorios: dict):
         return alquileres
     cantidad = int(cantidad_raw)
 
-    # Verificar stock
+    # Verificar stock disponible
     if accesorios[codigo_producto].get("Stock", 0) < cantidad:
         print("Stock insuficiente.")
         return alquileres
 
+    # Precio unitario
     precio_unit = accesorios[codigo_producto].get("PrecioDiario", 0)
 
     # FECHA INICIO = clave del alquiler
     fh = fecha_hora_actual()
 
-    clave_alquiler = fh  # clave basada en fecha
-    # Evita que se repitan claves si se alquilan varios en el mismo segundo
+    clave_alquiler = fh  # clave basada en fecha/hora exacta para evitar que coincidan dos claves iguales dentro del mismo segundo
     if clave_alquiler in alquileres[anio]:
         clave_alquiler = fh + f"-{len(alquileres[anio]) + 1}"
 
@@ -82,13 +91,14 @@ def registrar_alquiler(alquileres: dict, clientes: dict, accesorios: dict):
     print("\nIngrese fecha de devolución (AAAA.MM.DD hh:mm:ss)")
     fecha_fin = input("Fecha fin: ").strip()
 
+    # Validar fecha fin
     try:
         time.strptime(fecha_fin, "%Y.%m.%d %H:%M:%S")
     except:
         print("Fecha inválida. Se aplicará 1 día de alquiler.")
         fecha_fin = fh
 
-    # Calcular días de diferencia
+    # Calcular días transcurridos
     inicio = time.strptime(fh, "%Y.%m.%d %H:%M:%S")
     fin = time.strptime(fecha_fin, "%Y.%m.%d %H:%M:%S")
     t_inicio = time.mktime(inicio)
@@ -100,7 +110,7 @@ def registrar_alquiler(alquileres: dict, clientes: dict, accesorios: dict):
         dias = int((t_fin - t_inicio) // 86400)
         dias = max(1, dias)
 
-    # Calcular total
+    # Calcular total del alquiler
     total = precio_unit * cantidad * dias
 
     # Guardar alquiler
@@ -116,7 +126,7 @@ def registrar_alquiler(alquileres: dict, clientes: dict, accesorios: dict):
     }
 
     # Actualizar stock
-    accesorios[codigo_producto]["Stock"] -= cantidad
+    accesorios[codigo_producto]["Stock"] = cantidad
 
     print(f"Alquiler registrado correctamente:")
     print(f"Clave: {clave_alquiler}")
@@ -124,3 +134,4 @@ def registrar_alquiler(alquileres: dict, clientes: dict, accesorios: dict):
     print(f"Cantidad: {cantidad} | Días: {dias} | Total: ${total}")
 
     return alquileres
+
