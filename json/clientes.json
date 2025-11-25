@@ -1,82 +1,120 @@
 {
-  "C001": {
-    "Nombre": "Gonzalo Perez",
-    "Edad": 28,
-    "DNI": "30111222",
-    "Email": "gonzalo@example.com",
-    "Telefonos": { "3411234567": true },
-    "Activo": true
-  },
-  "C002": {
-    "Nombre": "María López",
-    "Edad": 34,
-    "DNI": "30122333",
-    "Email": "maria@example.com",
-    "Telefonos": { "3412345678": true, "3419876543": true },
-    "Activo": true
-  },
-  "C003": {
-    "Nombre": "Juan García",
-    "Edad": 45,
-    "DNI": "30133444",
-    "Email": "",
-    "Telefonos": { "3415550000": true },
-    "Activo": true
-  },
-  "C004": {
-    "Nombre": "Lucía Fernández",
-    "Edad": 22,
-    "DNI": "30144555",
-    "Email": "lucia@example.com",
-    "Telefonos": { "3416661111": true },
-    "Activo": true
-  },
-  "C005": {
-    "Nombre": "Carlos Sánchez",
-    "Edad": 50,
-    "DNI": "30155666",
-    "Email": "",
-    "Telefonos": { "3417772222": true },
-    "Activo": true
-  },
-  "C006": {
-    "Nombre": "Verónica Ruiz",
-    "Edad": 29,
-    "DNI": "30166777",
-    "Email": "vero@example.com",
-    "Telefonos": { "3418883333": true, "3419994444": true },
-    "Activo": true
-  },
-  "C007": {
-    "Nombre": "Diego Martín",
-    "Edad": 31,
-    "DNI": "30177888",
-    "Email": "",
-    "Telefonos": { "3411010101": true },
-    "Activo": true
-  },
-  "C008": {
-    "Nombre": "Romina Díaz",
-    "Edad": 27,
-    "DNI": "30188999",
-    "Email": "romi@example.com",
-    "Telefonos": { "3411212121": true },
-    "Activo": true
-  },
-  "C009": {
-    "Nombre": "Pedro Alvarez",
-    "Edad": 38,
-    "DNI": "30199000",
-    "Email": "",
-    "Telefonos": { "3411313131": true },
-    "Activo": true
-  },
-  "C010": {
-    "Nombre": "Ana Molina",
-    "Edad": 24,
-    "DNI": "30200111",
-    "Email": "ana@example.com",
-    "Telefonos": { "3411414141": true },
-    "Activo": true
-  }
+    "C001": {
+        "Nombre": "Gonzalo Perez",
+        "Edad": 28,
+        "DNI": "30111222",
+        "Email": "gonzalo@example.com",
+        "Telefonos": {
+            "3411234567": true
+        },
+        "Activo": true
+    },
+    "C002": {
+        "Nombre": "María López",
+        "Edad": 34,
+        "DNI": "30122333",
+        "Email": "maria@example.com",
+        "Telefonos": {
+            "3412345678": true,
+            "3419876543": true
+        },
+        "Activo": true
+    },
+    "C003": {
+        "Nombre": "Juan García",
+        "Edad": 45,
+        "DNI": "30133444",
+        "Email": "",
+        "Telefonos": {
+            "3415550000": true
+        },
+        "Activo": true
+    },
+    "C004": {
+        "Nombre": "Lucía Fernández",
+        "Edad": 22,
+        "DNI": "30144555",
+        "Email": "lucia@example.com",
+        "Telefonos": {
+            "3416661111": true
+        },
+        "Activo": true
+    },
+    "C005": {
+        "Nombre": "Carlos Sánchez",
+        "Edad": 50,
+        "DNI": "30155666",
+        "Email": "",
+        "Telefonos": {
+            "3417772222": true
+        },
+        "Activo": true
+    },
+    "C006": {
+        "Nombre": "Verónica Ruiz",
+        "Edad": 29,
+        "DNI": "30166777",
+        "Email": "vero@example.com",
+        "Telefonos": {
+            "3418883333": true,
+            "3419994444": true
+        },
+        "Activo": true
+    },
+    "C007": {
+        "Nombre": "Diego Martín",
+        "Edad": 31,
+        "DNI": "30177888",
+        "Email": "",
+        "Telefonos": {
+            "3411010101": true
+        },
+        "Activo": true
+    },
+    "C008": {
+        "Nombre": "Romina Díaz",
+        "Edad": 27,
+        "DNI": "30188999",
+        "Email": "romi@example.com",
+        "Telefonos": {
+            "3411212121": true
+        },
+        "Activo": true
+    },
+    "C009": {
+        "Nombre": "Pedro Alvarez",
+        "Edad": 38,
+        "DNI": "30199000",
+        "Email": "",
+        "Telefonos": {
+            "3411313131": true
+        },
+        "Activo": true
+    },
+    "C010": {
+        "Nombre": "Ana Molina",
+        "Edad": 24,
+        "DNI": "30200111",
+        "Email": "ana@example.com",
+        "Telefonos": {
+            "3411414141": true
+        },
+        "Activo": true
+    },
+    "C011": {
+        "Nombre": "MILO J",
+        "Edad": 25,
+        "DNI": "",
+        "Email": "",
+        "Telefonos": {},
+        "Activo": false
+    },
+    "C012": {
+        "Nombre": "juann",
+        "Edad": 23,
+        "DNI": "vfsr",
+        "Email": "d qedqqe",
+        "Telefonos": {},
+        "Activo": true
+    }
 }

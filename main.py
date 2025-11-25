@@ -19,6 +19,7 @@ Descripción:
 import time  # permitido en el enunciado para obtener fecha/hora
 import os
 import json
+import re
 
 # Directorio y archivos JSON
 DATA_DIR = os.path.join(os.path.dirname(__file__), "json")
@@ -106,6 +107,21 @@ def pausar():
     input("\nPresione ENTER para volver al menú.")
 
 
+def validar_email(email: str) -> bool:
+    """
+    Valida un email con regex. Retorna True solo si el email coincide con el patrón.
+    """
+    try:
+        if email is None:
+            return False
+        email = email.strip()
+        if email == "":
+            return False
+        pat = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
+        return True if re.match(pat, email) else False
+    except Exception:
+        return False
+
 # ---------------------------
 # CRUD CLIENTES
 # ---------------------------
@@ -148,11 +164,22 @@ def alta_cliente(clientes: dict):
         telefonos_raw = input("Teléfonos (separe por coma si hay más de uno): ").strip()
         telefonos = {t.strip(): True for t in telefonos_raw.split(",") if t.strip() != ""}
 
+        # validar email opcional
+        while True:
+            email_input = input("Email (opcional): ").strip()
+            if email_input == "":
+                email_final = ""
+                break
+            if validar_email(email_input):
+                email_final = email_input
+                break
+            print("Email inválido. Ingrese un email válido o deje vacío para omitir.")
+
         clientes[codigo] = {
             "Nombre": nombre,
             "Edad": edad,
             "DNI": input("DNI (opcional): ").strip(),
-            "Email": input("Email (opcional): ").strip(),
+            "Email": email_final,
             "Telefonos": telefonos,
             "Activo": True
         }
@@ -196,6 +223,12 @@ def modificar_cliente(clientes: dict):
         telefonos_raw = input(f"Teléfonos actuales {list(cli.get('Telefonos', {}).keys())}. Nuevos (coma sep): ").strip()
         if telefonos_raw != "":
             cli["Telefonos"] = {t.strip(): True for t in telefonos_raw.split(",") if t.strip() != ""}
+
+        email = input(f"Email ({cli.get('Email')}): ").strip()
+        if email != "" and not validar_email(email):
+            print("Email inválido. Se omitirá este dato.")
+        else:
+            cli["Email"] = email
 
         clientes[codigo] = cli
         save_json_file(CLIENTS_FILE, clientes)
