@@ -17,6 +17,50 @@ Descripción:
 # MÓDULOS
 #----------------------------------------------------------------------------------------------
 import time  # permitido en el enunciado para obtener fecha/hora
+import os
+import json
+
+# Directorio y archivos JSON
+DATA_DIR = os.path.join(os.path.dirname(__file__), "json")
+CLIENTS_FILE = os.path.join(DATA_DIR, "clientes.json")
+ACCESORIOS_FILE = os.path.join(DATA_DIR, "accesorios.json")
+TALLES_FILE = os.path.join(DATA_DIR, "talles.json")
+ALQUILERES_FILE = os.path.join(DATA_DIR, "alquileres.json")
+
+
+def load_json_file(filepath: str) -> dict:
+    """
+    Objetivo: Cargar y devolver el contenido de un archivo JSON.
+    Entrada: ruta absoluta del archivo.
+    Salida: dict con los datos del JSON o {} en caso de fallo.
+    """
+    try:
+        if not os.path.exists(filepath):
+            return {}
+        with open(filepath, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except (IOError, json.JSONDecodeError) as e:
+        print(f"Error leyendo {os.path.basename(filepath)}: {e}")
+        return {}
+    except Exception as e:
+        print(f"Error inesperado leyendo {os.path.basename(filepath)}: {e}")
+        return {}
+
+
+def save_json_file(filepath: str, data: dict):
+    """
+    Objetivo: Guardar un dict en formato JSON (sobrescribe el archivo).
+    Entrada: ruta del archivo y dict de datos.
+    Salida: None (escribe el archivo), imprime error en caso de fallo.
+    """
+    try:
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+        with open(filepath, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=4, ensure_ascii=False)
+    except IOError as e:
+        print(f"Error escribiendo {os.path.basename(filepath)}: {e}")
+    except Exception as e:
+        print(f"Error inesperado escribiendo {os.path.basename(filepath)}: {e}")
 
 
 #----------------------------------------------------------------------------------------------
@@ -69,119 +113,150 @@ def alta_cliente(clientes: dict):
     """
     Objetivo: Registrar un nuevo cliente con código asignado automáticamente.
     Entrada: 
-        - clientes (dict): Diccionario con los clientes existentes.
-    Salida: Diccionario actualizado con el nuevo cliente agregado (código, nombre, edad, DNI, email, teléfonos).
+        - clientes (dict): Diccionario con los clientes existentes (no obligatorio).
+    Salida: Diccionario actualizado con el nuevo cliente agregado y guardado en JSON.
     """
-    print(">>> ALTA CLIENTE")
+    try:
+        # cargar desde archivo (si existe). Sobrescribe clientes local
+        clientes = load_json_file(CLIENTS_FILE) or {}
+        print(">>> ALTA CLIENTE")
 
-    if len(clientes) == 0:
-        next_n = 1
-    else:
-        ultima_clave = list(clientes.keys())[-1]
-        numero_str = ultima_clave[1:]
-        if numero_str.isdigit():
-            next_n = int(numero_str) + 1
-        else:
+        if len(clientes) == 0:
             next_n = 1
+        else:
+            ultima_clave = list(clientes.keys())[-1]
+            numero_str = ultima_clave[1:]
+            if numero_str.isdigit():
+                next_n = int(numero_str) + 1
+            else:
+                next_n = 1
 
-    codigo = f"C{next_n:03d}"
-    print(f"Código asignado: {codigo}")
+        codigo = f"C{next_n:03d}"
+        print(f"Código asignado: {codigo}")
 
-    nombre = input("Nombre y Apellido: ").strip()
-    if nombre == "":
-        print("Nombre inválido.")
+        nombre = input("Nombre y Apellido: ").strip()
+        if nombre == "":
+            print("Nombre inválido.")
+            return clientes
+
+        edad_str = input("Edad: ").strip()
+        if not edad_str.isdigit() or int(edad_str) < 18:
+            print("No se permiten clientes menores a 18 años.")
+            return clientes
+        edad = int(edad_str)
+
+        telefonos_raw = input("Teléfonos (separe por coma si hay más de uno): ").strip()
+        telefonos = {t.strip(): True for t in telefonos_raw.split(",") if t.strip() != ""}
+
+        clientes[codigo] = {
+            "Nombre": nombre,
+            "Edad": edad,
+            "DNI": input("DNI (opcional): ").strip(),
+            "Email": input("Email (opcional): ").strip(),
+            "Telefonos": telefonos,
+            "Activo": True
+        }
+        save_json_file(CLIENTS_FILE, clientes)
+        print(f"Cliente {codigo} dado de alta.")
         return clientes
-
-    edad_str = input("Edad: ").strip()
-    if not edad_str.isdigit() or int(edad_str) < 18:
-        print("No se permiten clientes menores a 18 años.")
+    except KeyboardInterrupt:
+        print("\nAlta de cliente cancelada.")
         return clientes
-    edad = int(edad_str)
-
-    telefonos_raw = input("Teléfonos (separe por coma si hay más de uno): ").strip()
-    telefonos = {t.strip(): True for t in telefonos_raw.split(",") if t.strip() != ""}
-
-    clientes[codigo] = {
-        "Nombre": nombre,
-        "Edad": edad,
-        "DNI": input("DNI (opcional): ").strip(),
-        "Email": input("Email (opcional): ").strip(),
-        "Telefonos": telefonos,
-        "Activo": True
-    }
-    print(f"Cliente {codigo} dado de alta.")
-    return clientes
+    except Exception as e:
+        print(f"Error al dar de alta el cliente: {e}")
+        return clientes
 
 
 def modificar_cliente(clientes: dict):
     """
     Objetivo: Modificar datos de un cliente existente (nombre, DNI, teléfonos).
     Entrada: 
-        - clientes (dict): Diccionario con los clientes existentes.
-    Salida: Diccionario actualizado con los cambios realizados al cliente.
+        - clientes (dict): Diccionario con los clientes existentes (no obligatorio).
+    Salida: Diccionario actualizado y persistido en JSON.
     """
-    print(">>> MODIFICAR CLIENTE")
-    listar_clientes_activos(clientes)
-    codigo = input("Código cliente a modificar: ").strip().upper()
-    if codigo not in clientes:
-        print("Cliente no encontrado.")
+    try:
+        clientes = load_json_file(CLIENTS_FILE) or {}
+        print(">>> MODIFICAR CLIENTE")
+        listar_clientes_activos(clientes)
+        codigo = input("Código cliente a modificar: ").strip().upper()
+        if codigo not in clientes:
+            print("Cliente no encontrado.")
+            return clientes
+
+        cli = clientes[codigo]
+        print("Dejar vacío para mantener valor actual.")
+        nombre = input(f"Nombre ({cli.get('Nombre')}): ").strip()
+        if nombre != "":
+            cli["Nombre"] = nombre
+
+        dni = input(f"DNI ({cli.get('DNI')}): ").strip()
+        if dni != "":
+            cli["DNI"] = dni
+
+        telefonos_raw = input(f"Teléfonos actuales {list(cli.get('Telefonos', {}).keys())}. Nuevos (coma sep): ").strip()
+        if telefonos_raw != "":
+            cli["Telefonos"] = {t.strip(): True for t in telefonos_raw.split(",") if t.strip() != ""}
+
+        clientes[codigo] = cli
+        save_json_file(CLIENTS_FILE, clientes)
+        print(f"Cliente {codigo} modificado.")
         return clientes
-
-    cli = clientes[codigo]
-    print("Dejar vacío para mantener valor actual.")
-    nombre = input(f"Nombre ({cli.get('Nombre')}): ").strip()
-    if nombre != "":
-        cli["Nombre"] = nombre
-
-    dni = input(f"DNI ({cli.get('DNI')}): ").strip()
-    if dni != "":
-        cli["DNI"] = dni
-
-    telefonos_raw = input(f"Teléfonos actuales {list(cli.get('Telefonos', {}).keys())}. Nuevos (coma sep): ").strip()
-    if telefonos_raw != "":
-        cli["Telefonos"] = {t.strip(): True for t in telefonos_raw.split(",") if t.strip() != ""}
-
-    clientes[codigo] = cli
-    print(f"Cliente {codigo} modificado.")
-    return clientes
+    except KeyboardInterrupt:
+        print("\nModificación cancelada por el usuario.")
+        return clientes
+    except Exception as e:
+        print(f"Error al modificar cliente: {e}")
+        return clientes
 
 
 def baja_logica_cliente(clientes: dict):
     """
     Objetivo: Marcar un cliente como inactivo sin eliminar sus datos (baja lógica).
     Entrada: 
-        - clientes (dict): Diccionario con los clientes existentes.
-    Salida: Diccionario con el cliente marcado como inactivo (Activo = False).
+        - clientes (dict): Diccionario con los clientes existentes (no obligatorio).
+    Salida: Diccionario actualizado y persistido en JSON.
     """
-    print(">>> ELIMINAR (Baja lógica) CLIENTE")
-    print(">>> ej:codigo de cliente: C011")
-    codigo = input("Código cliente a dar de baja: ").strip().upper()
-    if codigo not in clientes:
-        print("Cliente no encontrado.")
+    try:
+        clientes = load_json_file(CLIENTS_FILE) or {}
+        print(">>> ELIMINAR (Baja lógica) CLIENTE")
+        codigo = input("Código cliente a dar de baja: ").strip().upper()
+        if codigo not in clientes:
+            print("Cliente no encontrado.")
+            return clientes
+        clientes[codigo]["Activo"] = False
+        save_json_file(CLIENTS_FILE, clientes)
+        print(f"Cliente {codigo} marcado como inactivo.")
         return clientes
-    clientes[codigo]["Activo"] = False
-    print(f"Cliente {codigo} marcado como inactivo.")
-    return clientes
+    except KeyboardInterrupt:
+        print("\nOperación cancelada.")
+        return clientes
+    except Exception as e:
+        print(f"Error marcando baja de cliente: {e}")
+        return clientes
 
 
 def listar_clientes_activos(clientes: dict):
     """
     Objetivo: Mostrar en formato tabular todos los clientes con estado Activo = True.
     Entrada: 
-        - clientes (dict): Diccionario con los clientes existentes.
+        - clientes (dict): Diccionario con los clientes existentes (opcional).
     Salida: Ninguna (solo visualización en pantalla).
     """
-    print(">>> LISTADO DE CLIENTES ACTIVOS")
-    encabezado = f"{'CÓDIGO':8} {'NOMBRE':30} {'EDAD':4} {'TELÉFONOS'}"
-    print(encabezado)
-    print("-" * len(encabezado))
-    for codigo, datos in clientes.items():
-        if datos.get("Activo", False):
-            telefonos = ", ".join(datos.get("Telefonos", {}).keys())
-            print(f"{codigo:8} {datos.get('Nombre','')[:30]:30} {str(datos.get('Edad','')):4} {telefonos}")
-    print("-" * len(encabezado))
-
-    # no return (solo visualización)
+    try:
+        if not clients == load_json_file(CLIENTS_FILE):
+            clients = {}
+        clientes = clients
+        print(">>> LISTADO DE CLIENTES ACTIVOS")
+        encabezado = f"{'CÓDIGO':8} {'NOMBRE':30} {'EDAD':4} {'TELÉFONOS'}"
+        print(encabezado)
+        print("-" * len(encabezado))
+        for codigo, datos in clientes.items():
+            if datos.get("Activo", False):
+                telefonos = ", ".join(datos.get("Telefonos", {}).keys())
+                print(f"{codigo:8} {datos.get('Nombre','')[:30]:30} {str(datos.get('Edad','')):4} {telefonos}")
+        print("-" * len(encabezado))
+    except Exception as e:
+        print(f"Error en listar_clientes_activos: {e}")
 
 
 # ---------------------------
@@ -189,44 +264,52 @@ def listar_clientes_activos(clientes: dict):
 # ---------------------------
 def alta_accesorio(accesorios: dict):
     """
-    Objetivo: Registrar un nuevo producto/accesorio con código definido por el usuario.
+    Objetivo: Registrar un nuevo producto/accesorio con código definido por el usuario y guardarlo en JSON.
     Entrada: 
-        - accesorios (dict): Diccionario con los accesorios existentes.
-    Salida: Diccionario actualizado con el nuevo accesorio (código, nombre, precio, stock, talles).
+        - accesorios (dict): Diccionario con los accesorios existentes (opcional).
+    Salida: Diccionario actualizado y persistido en JSON.
     """
-    print(">>> ALTA ACCESORIO")
-    listar_productos_en_stock(accesorios)
+    try:
+        accesorios = load_json_file(ACCESORIOS_FILE) or {}
+        print(">>> ALTA ACCESORIO")
+        listar_productos_en_stock(accesorios)
+        codigo = input("Código producto (ej: P011): ").strip()
+        if codigo == "" or codigo in accesorios:
+            print("Código inválido o ya existe.")
+            return accesorios
 
-    codigo = input("Código producto (ej: P011): ").strip()
-    if codigo == "" or codigo in accesorios:
-        print("Código inválido o ya existe.")
+        nombre = input("Nombre del accesorio: ").strip()
+        precio_raw = input("Precio diario (sin separadores): ").strip()
+        if not precio_raw.isdigit():
+            print("Precio inválido.")
+            return accesorios
+        precio = int(precio_raw)
+        stock_raw = input("Stock inicial (entero): ").strip()
+        if not stock_raw.isdigit():
+            print("Stock inválido.")
+            return accesorios
+        stock = int(stock_raw)
+
+        talles_raw = input("Talles disponibles (separar por coma): ").strip()
+        talles = {t.strip(): True for t in talles_raw.split(",") if t.strip() != ""}
+
+        accesorios[codigo] = {
+            "Nombre": nombre,
+            "PrecioDiario": precio,
+            "Stock": stock,
+            "PerdidosRotura": 0,
+            "Talles": talles,
+            "Activo": True
+        }
+        save_json_file(ACCESORIOS_FILE, accesorios)
+        print(f"Accesorio {codigo} cargado.")
         return accesorios
-
-    nombre = input("Nombre del accesorio: ").strip()
-    precio_raw = input("Precio diario (sin separadores): ").strip()
-    if not precio_raw.isdigit():
-        print("Precio inválido.")
+    except KeyboardInterrupt:
+        print("\nAlta de accesorio cancelada.")
         return accesorios
-    precio = int(precio_raw)
-    stock_raw = input("Stock inicial (entero): ").strip()
-    if not stock_raw.isdigit():
-        print("Stock inválido.")
+    except Exception as e:
+        print(f"Error al dar de alta accesorio: {e}")
         return accesorios
-    stock = int(stock_raw)
-
-    talles_raw = input("Talles disponibles (separar por coma): ").strip()
-    talles = {t.strip(): True for t in talles_raw.split(",") if t.strip() != ""}
-
-    accesorios[codigo] = {
-        "Nombre": nombre,
-        "PrecioDiario": precio,
-        "Stock": stock,
-        "PerdidosRotura": 0,
-        "Talles": talles,
-        "Activo": True
-    }
-    print(f"Accesorio {codigo} cargado.")
-    return accesorios
 
 
 def modificar_accesorio(accesorios: dict):
@@ -310,7 +393,7 @@ def listar_perdidos_rotos(accesorios: dict):
     print("-" * len(encabezado))
     for codigo, p in accesorios.items():
         if p.get("PerdidosRotura", 0) > 0:
-            print(f"{codigo:8} {p.get('Nombre','')[:30]:30} {str(p.get('PerdidosRotura')):15}")
+            print(f"{codigo:8} {p.get('Nombre',''):30} {str(p.get('PerdidosRotura')):15}")
 
 
 def listar_talles_producto(accesorios: dict):
@@ -569,9 +652,6 @@ def informe_stock_resumen(accesorios: dict):
 # CUERPO PRINCIPAL
 #----------------------------------------------------------------------------------------------
 def main():
-    #-------------------------------------------------
-    # Inicialización de variables (3 diccionarios de diccionarios - entidades maestras)
-    #-------------------------------------------------
     """
     clientes = {
         # clave: código string -> valor: dict atributos (incluye 'Telefonos' dict)
@@ -783,6 +863,11 @@ def main():
     }
     }
     """
+    # cargar desde JSON al inicio (variables usadas por la UI)
+    clientes = load_json_file(CLIENTS_FILE) or {}
+    accesorios = load_json_file(ACCESORIOS_FILE) or {}
+    talles = load_json_file(TALLES_FILE) or {}
+    alquileres = load_json_file(ALQUILERES_FILE) or {}
 
     #-------------------------------------------------
     # Bloque de menú 
